@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(my_model)
+project(detection)
 
 #This package allows us to write config files that can be relocated, paths are not hard-coded.
 include ( CMakePackageConfigHelpers )
@@ -125,13 +125,13 @@ doxygen_add_docs(docs           # target name
   )
 
 # Build libraries:
-add_library (my_model
+add_library (detection
   src/my_dummy_lib_funct1.cpp
   src/my_dummy_lib_funct2.cpp
   )
 
 # Specify where the associated include files are
-target_include_directories (my_model PUBLIC
+target_include_directories (detection PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
     $<INSTALL_INTERFACE:include> 
     PUBLIC ${OpenCV_INCLUDE_DIRS}
@@ -139,7 +139,7 @@ target_include_directories (my_model PUBLIC
 
 # Specify where the associated libraries are
 # Any dependent libraires needed to build this target.
-target_link_libraries(my_model
+target_link_libraries(detection
   # list of libraries
   ${OpenCV_LIBRARIES}
   )
@@ -151,8 +151,8 @@ target_link_libraries(my_model
 
 # Install executables and libraries:
 install (TARGETS
-  my_model
-  EXPORT my_model-export      # Add targets to a export group named "my_model-export"
+  detection
+  EXPORT detection-export      # Add targets to a export group named "detection-export"
   DESTINATION lib/${PROJECT_NAME}
   )
 
@@ -169,15 +169,15 @@ install(FILES
 
 # Export the export group. CMake will write a configuration file of the current build tree:
 export (TARGETS
-  my_model
-  FILE my_model-config.cmake)   # must by <PACKAGE>-config.cmake
+  detection
+  FILE detection-config.cmake)   # must by <PACKAGE>-config.cmake
 
 # Export build tree to the package registry (~/.cmake/packages/<packag>/)
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
-export(PACKAGE my_model)
+export(PACKAGE detection)
 
 # Install the export group
-install(EXPORT my_model-export
+install(EXPORT detection-export
   DESTINATION share/${PROJECT_NAME}/cmake/
   )
 

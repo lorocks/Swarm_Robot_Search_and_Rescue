@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(my_controller)
+project(multi_robot)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
-find_package(my_model REQUIRED) # add my_model
+find_package(detetction REQUIRED) # add detection
 
 ############################################
 # Set up level 2 unit test (i.e, integration test)
@@ -34,7 +34,7 @@ if(BUILD_TESTING)
   ament_target_dependencies(${PROJECT_NAME}_test
     rclcpp std_msgs
   )
-  target_link_libraries(${PROJECT_NAME}_test my_model)
+  target_link_libraries(${PROJECT_NAME}_test detection)
 endif()
 
 ###################################################
@@ -96,12 +96,12 @@ add_executable(listener
 ament_target_dependencies(talker
   rclcpp std_msgs)
 target_link_libraries(talker 
-  my_model)
+  detection)
 
 ament_target_dependencies(listener
   rclcpp std_msgs)
 target_link_libraries(listener
-  my_model)
+  detection)
 
 ###################################
 # Installation

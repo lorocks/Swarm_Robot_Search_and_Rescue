@@ -17,7 +17,7 @@ target_include_directories(my_model_tester PUBLIC
 target_link_libraries(my_model_tester PUBLIC
   # list of libraries:
   gtest
-  my_model
+  detection
   )
 
 # Enable CMake’s test runner to discover the tests included in the

@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
-find_package(detetction REQUIRED) # add detection
+find_package(detection REQUIRED) # add detection
 
 ############################################
 # Set up level 2 unit test (i.e, integration test)

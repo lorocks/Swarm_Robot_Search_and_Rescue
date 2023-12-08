@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
-find_package(detection REQUIRED) # add detection
+find_package(sar REQUIRED) # add sar
 
 ############################################
 # Set up level 2 unit test (i.e, integration test)
@@ -34,7 +34,7 @@ if(BUILD_TESTING)
   ament_target_dependencies(${PROJECT_NAME}_test
     rclcpp std_msgs
   )
-  target_link_libraries(${PROJECT_NAME}_test detection)
+  target_link_libraries(${PROJECT_NAME}_test sar)
 endif()
 
 ###################################################
@@ -96,12 +96,12 @@ add_executable(listener
 ament_target_dependencies(talker
   rclcpp std_msgs)
 target_link_libraries(talker 
-  detection)
+  sar)
 
 ament_target_dependencies(listener
   rclcpp std_msgs)
 target_link_libraries(listener
-  detection)
+  sar)
 
 ###################################
 # Installation

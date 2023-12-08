@@ -7,7 +7,7 @@ def generate_launch_description():
 
     my_node = Node(
         package='my_controller',
-        executable='talker'
+        executable='cam_sub'
     )
 
     my_node2 = Node(

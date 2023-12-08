@@ -126,8 +126,8 @@ doxygen_add_docs(docs           # target name
 
 # Build libraries:
 add_library (sar
-  src/my_dummy_lib_funct1.cpp
-  src/my_dummy_lib_funct2.cpp
+  src/goals.cpp
+  src/search.cpp
   )
 
 # Specify where the associated include files are
@@ -158,8 +158,8 @@ install (TARGETS
 
 # Install the header files
 install(FILES
-  include/my_dummy_lib_funct1.hpp
-  include/my_dummy_lib_funct2.hpp
+  include/search.hpp
+  include/goals.hpp
   DESTINATION include 
   )
 

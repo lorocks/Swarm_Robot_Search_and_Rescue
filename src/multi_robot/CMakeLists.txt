@@ -10,6 +10,9 @@ endif()
 ###################################
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
 find_package(sar REQUIRED) # add sar
@@ -87,15 +90,15 @@ doxygen_add_docs(docs           # target name
   )
 
 # Add executables:
-add_executable(talker
-  src/publisher_member_function.cpp)
+add_executable(cam_sub
+  src/camera_subscriber.cpp)
 add_executable(listener
   src/subscriber_member_function.cpp)
 
 # Add executable dependencis:
-ament_target_dependencies(talker
-  rclcpp std_msgs)
-target_link_libraries(talker 
+ament_target_dependencies(cam_sub
+  rclcpp std_msgs rclcpp sensor_msgs cv_bridge image_transport)
+target_link_libraries(cam_sub 
   sar)
 
 ament_target_dependencies(listener
@@ -109,7 +112,7 @@ target_link_libraries(listener
 
 # Install executables:
 install(TARGETS
-  talker
+  cam_sub
   listener
   DESTINATION lib/${PROJECT_NAME})
 

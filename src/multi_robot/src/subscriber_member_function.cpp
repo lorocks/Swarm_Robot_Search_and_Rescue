@@ -16,8 +16,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
 
-#include "my_dummy_lib_funct1.hpp"
-
 using std::placeholders::_1;
 using std_msgs::msg::String;
 
@@ -43,9 +41,7 @@ public:
         topic_name,
         10,
         callback);
-    }
-
-    function1 (23);             // test model library
+    }       
   }
 
 private:

@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "cv_bridge/cv_bridge.h"
-#include "search.hpp"  // Include your ObjectSearch class
+#include "search.hpp" 
 
 class ObjectSearchNode : public rclcpp::Node {
 public:
@@ -10,7 +10,7 @@ public:
 private:
     void cameraCallback(const sensor_msgs::msg::Image::SharedPtr msg);
 
-    // Correct declaration and initialization of objectSearch
+    // initialization of objectSearch
     std::shared_ptr<ObjectSearch> objectSearch{
         std::make_shared<ObjectSearch>("/path/to/the/model", "/path/to/the/config")};
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cameraSubscription;
@@ -19,8 +19,7 @@ private:
 ObjectSearchNode::ObjectSearchNode() : Node("object_search_node") {
     // Subscribe to the camera feed topic
     cameraSubscription = this->create_subscription<sensor_msgs::msg::Image>(
-        "/camera_topic",  // Replace with your actual camera topic
-        10,  // Adjust the queue size as needed
+        "/camera_topic", 10,
         std::bind(&ObjectSearchNode::cameraCallback, this, std::placeholders::_1)
     );
 }

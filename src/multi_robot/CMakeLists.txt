@@ -92,8 +92,8 @@ doxygen_add_docs(docs           # target name
 # Add executables:
 add_executable(cam_sub
   src/camera_subscriber.cpp)
-add_executable(listener
-  src/subscriber_member_function.cpp)
+add_executable(goal_pub
+  src/goal_publisher.cpp)
 
 # Add executable dependencis:
 ament_target_dependencies(cam_sub
@@ -101,9 +101,9 @@ ament_target_dependencies(cam_sub
 target_link_libraries(cam_sub 
   sar)
 
-ament_target_dependencies(listener
+ament_target_dependencies(goal_pub
   rclcpp std_msgs)
-target_link_libraries(listener
+target_link_libraries(goal_pub
   sar)
 
 ###################################
@@ -113,7 +113,7 @@ target_link_libraries(listener
 # Install executables:
 install(TARGETS
   cam_sub
-  listener
+  goal_pub
   DESTINATION lib/${PROJECT_NAME})
 
 # install launch files

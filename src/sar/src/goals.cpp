@@ -61,9 +61,13 @@ std::vector<GoalPosition> GoalGenerator::generateGoals(
     const cv::Mat& mapImage) {
   // Implement the multi-agent algorithm to generate goal positions based on the
   // map Update the goalPositions vector accordingly
+  GoalPosition testGoal;
 
   // Placeholder logic
-  goalPositions.clear();  // Clear previous goals
+  testGoal.x = 1;
+  testGoal.y = 1;
+
+  goalPositions.emplace_back(testGoal);
 
   // Implement your algorithm to generate goal positions based on the map
   return goalPositions;
@@ -88,6 +92,9 @@ GoalPosition GoalGenerator::updateGoal(int robotID) {
 
   // Placeholder logic
   GoalPosition updatedGoal;
+
+  updatedGoal.x = 1;
+  updatedGoal.y = 1;
 
   return updatedGoal;
 }

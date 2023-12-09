@@ -95,6 +95,7 @@ void ObjectSearchNode::cameraCallback(
     const sensor_msgs::msg::Image::SharedPtr msg) {
   // Convert ROS Image message to OpenCV image
   // TODO(Mayank): Add code to convert ROS Image to OpenCV image
+  auto subsMsg = msg;
 
   // Run object detection using the ObjectSearch class
   // TODO(Mayank): Add code to run object detection using ObjectSearch class

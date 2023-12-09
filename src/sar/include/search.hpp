@@ -60,18 +60,6 @@ class ObjectSearch {
   ~ObjectSearch();
 
   /**
-   * @brief Initializes the object detection model.
-   *
-   * This function initializes the object detection model using the specified
-   * pre-trained model and configuration files.
-   *
-   * @param modelPath The path to the pre-trained object detection model.
-   * @param configPath The path to the configuration file for the model.
-   */
-  void initializeObjectDetection(const std::string& modelPath,
-                                 const std::string& configPath);
-
-  /**
    * @brief Analyzes a video frame for object detection.
    *
    * This function takes a video frame as input and runs object detection

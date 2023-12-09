@@ -31,7 +31,7 @@
  * @brief Constructor for the ObjectSearch class.
  *
  * Initializes an instance of the ObjectSearch class with the provided model
- * and configuration paths. Calls the initializeObjectDetection function.
+ * and configuration paths.
  *
  * @param modelPath The path to the pre-trained object detection model.
  * @param configPath The path to the configuration file for the model.
@@ -40,7 +40,9 @@ ObjectSearch::ObjectSearch(const std::string& modelPath,
                            const std::string& configPath)
     : objectFound(false) {
   // Initialize the model and configuration paths
-  initializeObjectDetection(modelPath, configPath);
+  // Implement code to initialize the object detection model (YOLO or any other)
+  // Use modelPath and configPath for loading the YOLO model and configuration
+  humanDetectionModel = cv::dnn::readNet(modelPath, configPath);
 }
 
 /**
@@ -53,22 +55,6 @@ ObjectSearch::~ObjectSearch() {
   // Destructor implementation (if needed)
 }
 
-/**
- * @brief Initializes the object detection model.
- *
- * This function initializes the object detection model using the specified
- * pre-trained model and configuration files.
- *
- * @param modelPath The path to the pre-trained object detection model.
- * @param configPath The path to the configuration file for the model.
- */
-void ObjectSearch::initializeObjectDetection(const std::string& modelPath,
-                                             const std::string& configPath) {
-  // Implement code to initialize the object detection model (YOLO or any other)
-  // Use modelPath and configPath for loading the YOLO model and configuration
-
-  humanDetectionModel = cv::dnn::readNet(modelPath, configPath);
-}
 
 /**
  * @brief Analyzes a video frame for object detection.

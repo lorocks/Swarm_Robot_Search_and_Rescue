@@ -7,8 +7,8 @@
 
 TEST(unit_test_object_detect, this_should_pass) {
   ObjectSearch obj(
-      "../../models/res10_300x300_ssd_iter_140000_fp16.caffemodel",
-      "../../models/deploy.prototxt");
+      "../../models/modelfile",
+      "../../models/configfile");
 
   // Load a static image using cv::imread("../../assets/image.jpg"); and pass it through the runObjectDetection method 
   cv::Mat image;
@@ -20,8 +20,8 @@ TEST(unit_test_object_detect, this_should_pass) {
 
 TEST(unit_test_check_object_found, this_should_pass) {
     ObjectSearch obj(
-      "../../models/res10_300x300_ssd_iter_140000_fp16.caffemodel",
-      "../../models/deploy.prototxt");
+      "../../models/modelfile",
+      "../../models/configfile");
 
     bool val = obj.isObjectFound();
 

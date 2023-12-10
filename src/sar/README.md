@@ -1,40 +1,48 @@
-# `my_model`
+# `Search & Rescue (SaR)`
 
 ## Overview
 
-A stand-alone C++ library using:
+A stand-alone C++ API using:
 
 - CMake
 - GoogleTest
 - OpenCV
 
+The API is primarily built to be used with ROS2 but the API does not explicitly depend on ROS2 or any of its packages.
+It is a stand-alone API for Search and Rescue operations for robots by navigating and object detection in a provided location and cost map.
+
+The API consistes of two libraries
+- goals: A navigation library used to dynamically compute locations in a provided map where robots should move toward.
+- search: A object detection library used to check for pre-defined objects in the scene.
+
+### Library - goals
+It consists of two main method,
+- generateGoals(): is used to generate positions for the robot to navigate toward
+- updateGoal(): is used to set the current target location which is robot is moving towards
+
+### Library - search
+It consists of two main method,
+- runObjectDetection(): is used to pass the scene image for object detection and return the outputs from analysis
+- isObjectFound(): is used to set a global value for whether an object is found or not and by which robot
 
 ## Standard install via command-line
 ```bash
 # Configure the project and generate a native build system:
-  # Re-run this command whenever any CMakeLists.txt file has been changed.
-  cmake -S ./ -B build/
-# Compile and build the project:
-  # rebuild only files that are modified since the last build
-  cmake --build build/
-  # or rebuild everything from scracth
-  cmake --build build/ --clean-first
-  # to see verbose output, do:
-  cmake --build build/ --verbose
-# Run unit tests:
-  cd build/; ctest; cd -
-  # or if you have newer cmake
-  ctest --test-dir build/
-# Build docs:
-  cmake --build build/ --target docs
-  # open a web browser to browse the doc
-  open docs/html/index.html
-# Clean
-  cmake --build build/ --target clean
-# Clean and start over:
-  rm -rf build/
+  # Re-run this command whenever any files have been changed.
+  colcon build --packages-select sar
+  # Or build all packages using
+  colcon build
 ```
 
+## Running unit tests
+```bash
+# Run unit tests using the command
+  colcon test
+# View test results
+  colcon test-result --all
+# View verbose test results
+  colcon test-result --all --verbose
+```
  
 ## Building for code coverage
 

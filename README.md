@@ -1,4 +1,4 @@
-# ENPM808X-final-project-boilerplate
+# Swarm Robot Search & Rescus
 
 [![codecov](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate/branch/main/graph/badge.svg?token=KRAHD3BZP7)](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate)
 

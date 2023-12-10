@@ -42,7 +42,7 @@ ObjectSearch::ObjectSearch(const std::string& modelPath,
   // Initialize the model and configuration paths
   // Implement code to initialize the object detection model (YOLO or any other)
   // Use modelPath and configPath for loading the YOLO model and configuration
-  humanDetectionModel = cv::dnn::readNet(modelPath, configPath);
+  // humanDetectionModel = cv::dnn::readNet(modelPath, configPath);
 }
 
 /**
@@ -71,22 +71,25 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   // Update the internal state (e.g., set the boolean to true if the object is
   // found) Return the boolean value indicating whether the object is found or
   // not
-  cv::Mat inputBlob;
 
-  // Forward pass the image through the network
-  humanDetectionModel.setInput(inputBlob);
-  std::vector<cv::Mat> outputs;
-  humanDetectionModel.forward(outputs);
+  // cv::Mat inputBlob;
 
-  // Process the detection results and update the objectFound variable
-  // accordingly
-  for (const auto& output : outputs) {
-    // For each detection in the output, check if it matches the target object
-    // (human)
-    //  logic for identifying the object and updating objectFound
-  }
+  // // Forward pass the image through the network
+  // humanDetectionModel.setInput(inputBlob);
+  // std::vector<cv::Mat> outputs;
+  // humanDetectionModel.forward(outputs);
 
-  return objectFound;
+  // // Process the detection results and update the objectFound variable
+  // // accordingly
+  // for (const auto& output : outputs) {
+  //   // For each detection in the output, check if it matches the target object
+  //   // (human)
+  //   //  logic for identifying the object and updating objectFound
+  // }
+
+  // return objectFound;
+
+  return true;
 }
 
 /**

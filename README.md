@@ -1,31 +1,15 @@
-# ENPM808X-final-project-boilerplate
+# Swarm Robot Search & Rescue
 
 [![codecov](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate/branch/main/graph/badge.svg?token=KRAHD3BZP7)](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate)
 
-![CICD Workflow status](https://github.com/TommyChangUMD/ENPM808X-final-project-boilerplate/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
+![CICD Workflow status](https://github.com//lorocks/Swarm_Robot_Search_and_Rescue/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
 
-This repo provides a template for setting up:
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-  - GitHub CI
-    - "main" branch runs in a ROS 2 Humble container
-  - Codecov badges
-  - Colcon workspace structure
-  - C++ library that depends on other system libraries such as OpenCV.
-    - The library is *self-contained and does not depend on ROS.*
-    - In real life, we download source code of third-party modules all
-      the time and often just stick the modules as-is into our colcon
-      workspace.
-  - ROS 2 package that depends on a C++ library built in the same colcon workspace
-  - Establishing package dependency within the colcon workspace.
-    - ie. the ROS 2 package will not be built before all of its dependent C++ libraries are built first
-  - Multiple subscriptions within a ROS2 node all listening to the same topic.
-    - Only one callback function is needed.
-    - More efficient than to have N callback functions.
-    - More efficient than to have N ROS nodes.
-  - Unit test and integration test.
-  - Doxygen setup
-  - ROS2 launch file
-  - Bash scripts that can be invoked by the "ros2 run ..." command
+
+## Packages
+ - sar: A C++ API used for navigation and object detection with robotd
+ - multi_robot: A package created to use the sar API for Search & Rescue operations and Swarm implementation
   
 ## How to generate package dependency graph
 
@@ -40,13 +24,12 @@ open depGraph.png
 
 
 
-## How to build and run demo
+## How to build
 
 ```bash
 rm -rf build/ install/
 colcon build 
 source install/setup.bash
-ros2 launch my_controller run_demo.launch.py
 ```
 
 ## How to build for tests (unit test and integration test)
@@ -61,6 +44,8 @@ colcon build --cmake-args -DCOVERAGE=1
 ```bash
 source install/setup.bash
 colcon test
+# View test results
+colcon test-result --all --verbose
 ```
 
 ## How to generate coverage reports after running colcon test
@@ -71,22 +56,22 @@ First make sure we have run the unit test already.
 colcon test
 ```
 
-### Test coverage report for `my_controller`:
+### Test coverage report for `multi_robot`:
 
 ``` bash
-ros2 run my_controller generate_coverage_report.bash
-open build/my_controller/test_coverage/index.html
+ros2 run multi_robot generate_coverage_report.bash
+open build/multi_robot/test_coverage/index.html
 ```
 
-### Test coverage report for `my_model`:
+### Test coverage report for `sar`:
 
 ``` bash
 colcon build \
        --event-handlers console_cohesion+ \
-       --packages-select my_model \
+       --packages-select sar \
        --cmake-target "test_coverage" \
        --cmake-arg -DUNIT_TEST_ALREADY_RAN=1
-open build/my_model/test_coverage/index.html
+open build/sar/test_coverage/index.html
 ```
 
 ### combined test coverage report
@@ -100,12 +85,6 @@ open build/my_model/test_coverage/index.html
 ./do-docs.bash
 ```
 
-## How to use GitHub CI to upload coverage report to Codecov
 
-### First, sign up Codecov with you GitHub account.
-
-  https://about.codecov.io/sign-up/
-
-### Then, follow the similar instruction provided in the cpp-boilerplate-v2 repo
-
-  https://github.com/TommyChangUMD/cpp-boilerplate-v2
+ # Run nodes
+ Functionality is stil being built

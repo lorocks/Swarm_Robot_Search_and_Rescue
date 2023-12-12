@@ -28,21 +28,21 @@ colcon test
 ##############################
 # 3. get return status  (none-zero will cause the script to exit)
 ##############################
-colcon test-result --test-result-base build/my_controller
+colcon test-result --test-result-base build/multi_robot
 
 ##############################
 # 4. generate individual coverage reports:
 ##############################
-## 4.1 my_model:
+## 4.1 sar:
 colcon build \
        --event-handlers console_cohesion+ \
-       --packages-select my_model \
+       --packages-select sar \
        --cmake-target "test_coverage" \
        --cmake-arg -DUNIT_TEST_ALREADY_RAN=1
-MY_MODEL_COVERAGE_INFO=./build/my_model/test_coverage.info
-## 4.2 my_controller:
-ros2 run my_controller generate_coverage_report.bash
-MY_CONTROLLER_COVERAGE_INFO=./build/my_controller/test_coverage.info
+MY_MODEL_COVERAGE_INFO=./build/sar/test_coverage.info
+## 4.2 multi_robot:
+ros2 run multi_robot generate_coverage_report.bash
+MY_CONTROLLER_COVERAGE_INFO=./build/multi_robot/test_coverage.info
 
 ##############################
 # 5. Combine coverage reports

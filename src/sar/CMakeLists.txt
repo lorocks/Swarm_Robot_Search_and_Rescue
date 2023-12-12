@@ -3,6 +3,7 @@ project(sar)
 
 #This package allows us to write config files that can be relocated, paths are not hard-coded.
 include ( CMakePackageConfigHelpers )
+include(CTest)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -23,6 +24,7 @@ execute_process(COMMAND cmake -E create_symlink
 find_package(OpenCV REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Doxygen REQUIRED)
+
 
 
 ############################################

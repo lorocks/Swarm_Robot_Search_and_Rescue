@@ -87,4 +87,4 @@ open build/sar/test_coverage/index.html
 
 
  # Run nodes
- Functionality is stil being built
+ Functionality is stil being built.

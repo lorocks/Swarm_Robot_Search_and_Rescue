@@ -57,6 +57,16 @@ Algorithms that employ HSV manipulation of images using OpenCV will used for obj
 ## Phase 1
 For Phase 1, the initial design of UML diagrams and empty implementation with class stubs and placeholder unit tests are created.
 
+### Features
+ - search library: C++ library/API for object detection
+ - goals library: C++ library/API for autonomous navigation around a map
+ - CameraSubscriber: ROS2 node to subscribe to camera topics for object detection, uses search library as dependency
+ - GoalPublisher: ROS2 node to publish navigation goal/positions to the robots, uses goals library as dependency
+
+### Unit Tests
+ - Level 1: Tests for the C++ API, to check functionality of every class method was created
+ - Level 2 (Incomplete): Placeholder test for publishing is created
+
 
 # Build Commands
 ## How to generate package dependency graph

@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate/branch/main/graph/badge.svg?token=KRAHD3BZP7)](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate)
 
-![CICD Workflow status](https://github.com/TommyChangUMD/ENPM808X-final-project-boilerplate/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
+![CICD Workflow status](https://github.com//lorocks/Swarm_Robot_Search_and_Rescue/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 

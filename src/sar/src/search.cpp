@@ -55,7 +55,6 @@ ObjectSearch::~ObjectSearch() {
   // Destructor implementation (if needed)
 }
 
-
 /**
  * @brief Analyzes a video frame for object detection.
  *
@@ -82,7 +81,8 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   // // Process the detection results and update the objectFound variable
   // // accordingly
   // for (const auto& output : outputs) {
-  //   // For each detection in the output, check if it matches the target object
+  //   // For each detection in the output, check if it matches the target
+  //   object
   //   // (human)
   //   //  logic for identifying the object and updating objectFound
   // }

@@ -1,6 +1,6 @@
 # Swarm Robot Search & Rescue
 
-[![codecov](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate/branch/main/graph/badge.svg?token=KRAHD3BZP7)](https://codecov.io/gh/TommyChangUMD/ENPM808X-final-project-boilerplate)
+[![codecov](https://codecov.io/gh/lorocks/Swarm_Robot_Search_and_Rescue/graph/badge.svg?token=EN89MI8GLH)](https://codecov.io/gh/lorocks/Swarm_Robot_Search_and_Rescue)
 
 ![CICD Workflow status](https://github.com//lorocks/Swarm_Robot_Search_and_Rescue/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
 

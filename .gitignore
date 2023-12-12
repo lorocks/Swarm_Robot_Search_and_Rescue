@@ -1,7 +1,9 @@
 build/
 install/
 log/
+.cache/
 .vscode/
 src/.vscode/
 src/multi_robot/.cache/
 src/sar/.cache/
+src/sar/compile_commands.json

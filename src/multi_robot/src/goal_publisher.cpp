@@ -13,46 +13,99 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/string.hpp>
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
 
-using std::placeholders::_1;
-using std_msgs::msg::String;
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
 
-using SUBSCRIBER = rclcpp::Subscription<String>::SharedPtr;
 
-using STRING_MSG = std_msgs::msg::String;
-
-class MinimalSubscriber : public rclcpp::Node {
+/**
+ * @brief MinimalPublisher class that inherits form the Node class in rclcpp
+ * used to built a ros2 node
+ *
+ */
+class MinimalPublisher : public rclcpp::Node {
  public:
-  MinimalSubscriber(const std::string& node_name = "my_node",
-                    const std::string& node_namespace = "/my_ns",
-                    const std::string& topic_name = "my_topic")
-      : Node(node_name, node_namespace) {
-    for (int idx = 0; idx < numSubs; idx++) {
-      std::string subName = "subscription" + std::to_string(idx);
-      std::function<void(const STRING_MSG& msg)> callback =
-          std::bind(&MinimalSubscriber::topic_callback, this, _1, subName);
-      subscriptions_[idx] =
-          this->create_subscription<String>(topic_name, 10, callback);
+  /**
+   * @brief Construct a new Minimal Publisher object
+   *  Create a publisher and publish messages to the topic "/topic" at 500ms
+   * intervals
+   */
+  MinimalPublisher() : Node("minimal_publisher"), count_(0) {
+    this->declare_parameter("pub_frequency", 750);
+    int para_freq = this->get_parameter("pub_frequency").as_int();
+    if (para_freq < 450) {
+      RCLCPP_FATAL(this->get_logger(),
+                   "Publish time too fast...\n Selecting 750ms");
+      frequency = 750;
+    } else if (para_freq > 3000) {
+      RCLCPP_ERROR(this->get_logger(), "Publish time not optimal");
+      frequency = para_freq;
+    } else {
+      RCLCPP_DEBUG(this->get_logger(), "Setting custom publish frequency");
+      frequency = para_freq;
     }
+    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+    timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(frequency),
+        std::bind(&MinimalPublisher::timer_callback, this));
   }
 
  private:
-  void topic_callback(const STRING_MSG& msg, std::string subName) {
-    RCLCPP_INFO(this->get_logger(), "subName=%s, I heard : '%s'",
-                subName.c_str(), msg.data.c_str());
+  /**
+   * @brief A member function that runs based on set timer
+   *
+   */
+  void timer_callback() {
+    auto message = std_msgs::msg::String();
+    message.data = "Lowell's message number " + std::to_string(count_++);
+    RCLCPP_INFO(this->get_logger(), "Publishing message: '%s'",
+                message.data.c_str());
+    publisher_->publish(message);
   }
 
-  int numSubs = 5;
-  std::vector<SUBSCRIBER> subscriptions_ = std::vector<SUBSCRIBER>(numSubs);
+
+  /**
+   * @brief Create a timer shared pointer from rclcpp to be used in
+   * implementation
+   *
+   */
+  rclcpp::TimerBase::SharedPtr timer_;
+
+  /**
+   * @brief Create a publisher shared pointer from rclcpp to be used in the
+   * implementation
+   *
+   */
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+
+  /**
+   * @brief Create a count variable to increment the message number in published
+   * message
+   *
+   */
+  size_t count_;
+
+  /**
+   * @brief Create a frenquency variable from talker publish frequency
+   *
+   */
+  int frequency;
 };
 
+/**
+ * @brief The main implementation of the class
+ *
+ * @param argc Console input argument
+ * @param argv Console input argument
+ * @return int
+ */
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(
-      std::make_shared<MinimalSubscriber>("Listen_Node", "/", "topic"));
+  rclcpp::spin(std::make_shared<MinimalPublisher>());
   rclcpp::shutdown();
-
   return 0;
 }

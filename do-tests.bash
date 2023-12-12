@@ -34,6 +34,7 @@ colcon test-result --test-result-base build/multi_robot
 # 4. generate individual coverage reports:
 ##############################
 ## 4.1 sar:
+echo "DEBUG_LINE_2 = STARTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
 colcon build \
        --event-handlers console_cohesion+ \
        --packages-select sar \
@@ -43,7 +44,7 @@ MY_MODEL_COVERAGE_INFO=./build/sar/test_coverage.info
 ## 4.2 multi_robot:
 ros2 run multi_robot generate_coverage_report.bash
 MY_CONTROLLER_COVERAGE_INFO=./build/multi_robot/test_coverage.info
-
+echo "DEBUG_LINE_2 = FINISHHHHHHHHHH"
 ##############################
 # 5. Combine coverage reports
 ##############################

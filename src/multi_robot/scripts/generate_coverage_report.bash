@@ -20,13 +20,14 @@ ROS_PACKAGE_NAME=$(basename $PROG_DIR)
 echo "ROS_PACKAGE_NAME = $ROS_PACKAGE_NAME"
 
 # 2.) Generat report info
-BUILD_DIR=$EXEC_DIR/build/$ROS_PACKAGE_NAME/
+BUILD_DIR=$EXEC_DIR/build/$ROS_PACKAGE_NAME
 echo "BUILD_DIR = $BUILD_DIR"
 rm -f $BUILD_DIR/coverage.info
 lcov --capture --directory $BUILD_DIR --output-file $BUILD_DIR/coverage.info
 
 # 3.) Exclude some files from the reoport
 rm -f $BUILD_DIR/coverage_cleaned.info
+echo "DEBUG_LINE = $BUILD_DIR"
 lcov --remove $BUILD_DIR/coverage.info \
      '/opt/*' \
      '/usr/*' \
@@ -41,6 +42,7 @@ lcov --remove $BUILD_DIR/coverage.info \
      'gtest/*' \
      --output-file $BUILD_DIR/coverage_cleaned.info; \
 mv $BUILD_DIR/coverage_cleaned.info $BUILD_DIR/test_coverage.info
+echo "DEBUG_LINE_2 = AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 
 # 4.) Finally generate the coverage report

@@ -4,6 +4,7 @@
 
 ![CICD Workflow status](https://github.com/TommyChangUMD/ENPM808X-final-project-boilerplate/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 
 ## Packages

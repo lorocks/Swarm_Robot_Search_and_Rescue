@@ -37,12 +37,19 @@
  * @param configPath The path to the configuration file for the model.
  */
 ObjectSearch::ObjectSearch(const std::string& modelPath,
-                           const std::string& configPath)
+                           const std::string& yolo_names)
     : objectFound(false) {
-  // Initialize the model and configuration paths
-  // Implement code to initialize the object detection model (YOLO or any other)
-  // Use modelPath and configPath for loading the YOLO model and configuration
-  // humanDetectionModel = cv::dnn::readNet(modelPath, configPath);
+
+  // Initialize the YOLOv5 model
+  humanDetectionModel = cv::dnn::readNet(modelPath);
+
+  // Create a info stream of the classes from coco.names file and append it to classNames vector
+  std::ifstream classNamesFile(yolo_names.c_str());
+  std::string text;
+  while (classNamesFile >> text) {
+    getline(classNamesFile, text);
+    classNames.push_back(text);
+  }
 }
 
 /**
@@ -66,30 +73,42 @@ ObjectSearch::~ObjectSearch() {
  * @return True if object detection is successful, false otherwise.
  */
 bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
-  // Implement code to analyze the video stream using the object detection model
-  // Update the internal state (e.g., set the boolean to true if the object is
-  // found) Return the boolean value indicating whether the object is found or
-  // not
+  // Convert the frame to a blob suitable for input to the model
+    cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(416, 416), cv::Scalar(), true, false);
 
-  // cv::Mat inputBlob;
+    // Set the input blob for the model
+    humanDetectionModel.setInput(blob);
 
-  // // Forward pass the image through the network
-  // humanDetectionModel.setInput(inputBlob);
-  // std::vector<cv::Mat> outputs;
-  // humanDetectionModel.forward(outputs);
+    // Forward pass the blob through the model
+    cv::Mat detectionMat = humanDetectionModel.forward();
 
-  // // Process the detection results and update the objectFound variable
-  // // accordingly
-  // for (const auto& output : outputs) {
-  //   // For each detection in the output, check if it matches the target
-  //   object
-  //   // (human)
-  //   //  logic for identifying the object and updating objectFound
-  // }
+    // Process the detection results and update the objectFound variable accordingly
+    for (int i = 0; i < detectionMat.rows; ++i) {
+        float confidence = detectionMat.at<float>(i, 2);
 
-  // return objectFound;
+        // Extract class index from detection
+        int classId = static_cast<int>(detectionMat.at<float>(i, 1));
 
-  return true;
+        // Check if the detected class is a person
+        if (classNames[classId] == "person" && confidence > 0.5) {
+            objectFound = true;
+
+            // Extract bounding box coordinates
+            int x = static_cast<int>(frame.cols * detectionMat.at<float>(i, 3));
+            int y = static_cast<int>(frame.rows * detectionMat.at<float>(i, 4));
+            int width = static_cast<int>(frame.cols * (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
+            int height = static_cast<int>(frame.rows * (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
+
+            // Draw bounding box
+            cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y + height), cv::Scalar(0, 255, 0), 2);
+
+            return true;
+        }
+    }
+
+    // If no person is found in the frame, set objectFound to false
+    objectFound = false;
+    return false;
 }
 
 /**

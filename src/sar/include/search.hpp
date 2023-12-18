@@ -29,6 +29,7 @@
 #define SEARCH_HPP
 
 #include <iostream>
+#include <fstream>
 #include <opencv2/opencv.hpp>
 
 /**
@@ -49,7 +50,7 @@ class ObjectSearch {
    * @param modelPath The path to the pre-trained object detection model.
    * @param configPath The path to the configuration file for the model.
    */
-  ObjectSearch(const std::string& modelPath, const std::string& configPath);
+  ObjectSearch(const std::string& modelPath, const std::string& yolo_names);
 
   /**
    * @brief Destructor for ObjectSearch class.
@@ -90,6 +91,9 @@ class ObjectSearch {
    * @brief Private member variable for the object detection model.
    */
   cv::dnn::Net humanDetectionModel;
+
+  std::vector<std::string> classNames;
+
 };
 
 #endif  // SEARCH_HPP

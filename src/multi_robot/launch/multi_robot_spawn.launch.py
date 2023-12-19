@@ -19,8 +19,8 @@ def get_num(context: LaunchContext, robot_num, use_rviz):
     print(num_str)
     spawned = None
     for i in range(int(num_str)):
-        x_pose = LaunchConfiguration('x_pose', default=f'{3*i}')
-        y_pose = LaunchConfiguration('y_pose', default='0.0')
+        x_pose = LaunchConfiguration('x_pose', default=f'-2')
+        y_pose = LaunchConfiguration('y_pose', default=f'{i-1}')
         spawn = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(os.path.join(get_package_share_directory('multi_robot'), 'launch'), 'spawn_turtlebot3.launch.py')
@@ -28,7 +28,7 @@ def get_num(context: LaunchContext, robot_num, use_rviz):
                 launch_arguments={
                     'x_pose': x_pose,
                     'y_pose': y_pose,
-                    'robot_prefix': f'tb{i}',
+                    'namespace': f'tb{i}',
                 }.items()
             )
         
@@ -43,7 +43,7 @@ def get_num(context: LaunchContext, robot_num, use_rviz):
             )
 
             ld.add_action(spawn_turtlebot3)
-        spawned = spawn_turtlebot3
+        spawned = spawn
 
         spawn = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
@@ -64,7 +64,7 @@ def get_num(context: LaunchContext, robot_num, use_rviz):
                 )
             )
         ld.add_action(spawn_nav2)
-        spawned = spawn_nav2
+        spawned = spawn
 
 
 """@brief Generate the launch descriptions for ROS

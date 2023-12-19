@@ -49,7 +49,7 @@ def generate_launch_description():
     namespace_arg = DeclareLaunchArgument('namespace', default_value='tb0')
     namespace = LaunchConfiguration('namespace', default='tb0')
 
-    x_pose_arg = DeclareLaunchArgument('x_pose', default_value='0.0')
+    x_pose_arg = DeclareLaunchArgument('x_pose', default_value='-2.0')
     x_pose = LaunchConfiguration('x_pose')
     y_pose_arg = DeclareLaunchArgument('y_pose', default_value='0.0')
     y_pose = LaunchConfiguration('y_pose')
@@ -98,6 +98,25 @@ def generate_launch_description():
             ],
             output='screen',
         )
+    
+    map_server=Node(package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[{'yaml_filename': os.path.join(get_package_share_directory('turtlebot3_navigation2'), 'map', 'map.yaml'),
+                     },],
+        remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static')
+        ])
+    
+    map_server_lifecyle=Node(package='nav2_lifecycle_manager',
+            executable='lifecycle_manager',
+            name='lifecycle_manager_map_server',
+            output='screen',
+            parameters=[{'use_sim_time': True},
+                        {'autostart': True},
+                        {'node_names': ['map_server']}])
 
     ld = LaunchDescription()
 
@@ -109,5 +128,7 @@ def generate_launch_description():
     ld.add_action(namespace_arg)
     ld.add_action(spawn_turtlebot3)
     ld.add_action(gazebo)
+    ld.add_action(map_server)
+    ld.add_action(map_server_lifecyle)
 
     return ld

@@ -33,6 +33,7 @@ def launch(context: LaunchContext, x_pose, y_pose, namespace, use_rviz):
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     package_dir = get_package_share_directory('multi_robot')
     nav_dir = get_package_share_directory('nav2_bringup')
+    nav_launch_dir = os.path.join(package_dir, 'launch', 'nav2_bringup')
 
     x_pos = context.perform_substitution(x_pose)
     y_pos = context.perform_substitution(y_pose)
@@ -50,7 +51,7 @@ def launch(context: LaunchContext, x_pose, y_pose, namespace, use_rviz):
         default=os.path.join(package_dir, 'param', 'waffle.yaml'))
     
     nav2 = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(nav_dir, 'launch', 'bringup_launch.py')),
+            PythonLaunchDescriptionSource(os.path.join(nav_launch_dir, 'bringup_launch.py')),
                 launch_arguments={  
                     'slam': 'False',
                     'namespace': namespace,
@@ -80,11 +81,12 @@ def launch(context: LaunchContext, x_pose, y_pose, namespace, use_rviz):
     
     rviz_nav = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(nav_dir, 'launch', 'rviz_launch.py')),
+                    os.path.join(nav_launch_dir, 'rviz_launch.py')),
                     launch_arguments={
                         'use_sim_time': use_sim_time, 
                         'namespace': namespace,
                         'use_namespace': 'True',
+                        'rviz_config': os.path.join(package_dir, 'rviz', 'multi_nav2_default_view.rviz'), 'log_level': 'warn',
                     }.items(),
                     condition=IfCondition(use_rviz)
                 )
@@ -93,7 +95,6 @@ def launch(context: LaunchContext, x_pose, y_pose, namespace, use_rviz):
     ld.add_action(nav2)
     ld.add_action(rviz_nav)
     ld.add_action(initial_pose)
-
 
 def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='False')

@@ -13,7 +13,7 @@ class NavigateToPoseNode : public rclcpp::Node
 public:
     NavigateToPoseNode(const std::string& robot_namespace)
         : Node("navigate_to_pose_client_" + robot_namespace), present_goal(0), robot_namespace_(robot_namespace),
-          ObjectSearch("path/to/your/model.onnx", "path/to/your/coco.names")
+          find("src/multi_robot/models/yolov5s.onnx", "src/multi_robot/models/coco.names")
     {
         // Create an ActionClient for the NavigateToPose action
         goal_send = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "/" + robot_namespace + "/navigate_to_pose");
@@ -128,11 +128,11 @@ private:
         }
 
         // Run the object detection on the camera
-        if (ObjectSearch.runObjectDetection(cv_ptr->image))
+        if (find.runObjectDetection(cv_ptr->image))
         {
             // Object found, cancel goals for both robots
             RCLCPP_INFO(get_logger(), "Object found! Cancelling goals for %s", robot_namespace_.c_str());
-            future_goal_handle->cancel_goal();
+            goal_send->async_cancel_all_goals();
         }
     }
 
@@ -166,6 +166,7 @@ private:
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr goal_send;
     rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr future_goal_handle;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscriber_;
+    ObjectSearch find;
 };
 
 int main(int argc, char *argv[])

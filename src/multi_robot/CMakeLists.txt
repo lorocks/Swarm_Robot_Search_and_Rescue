@@ -127,6 +127,7 @@ install(DIRECTORY
   model
   urdf
   map
+  worlds
   param
   rviz
   DESTINATION share/${PROJECT_NAME}

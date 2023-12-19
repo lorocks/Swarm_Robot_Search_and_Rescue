@@ -11,14 +11,13 @@ import os
 """@brief Generate the launch descriptions for ROS
 """
 def generate_launch_description():
-    desc = LaunchDescription()
 
     robot_num = DeclareLaunchArgument(name="robot_num", default_value='2')
 
-    launch_file_dir = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch')
+    launch_file_dir = os.path.join(get_package_share_directory('multi_turtlebot_sim'), 'launch')
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
-    n = 5
+    n = 5.0
     x_pose = LaunchConfiguration('x_pose', default=f'{n}')
     y_pose = LaunchConfiguration('y_pose', default='-0.5')
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
@@ -43,12 +42,12 @@ def generate_launch_description():
     )
 
 
-    robot_state_publisher_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(launch_file_dir, 'robot_state_publisher.launch.py')
-        ),
-        launch_arguments={'use_sim_time': use_sim_time}.items()
-    )
+    # robot_state_publisher_cmd = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(launch_file_dir, 'robot_state_publisher.launch.py')
+    #     ),
+    #     launch_arguments={'use_sim_time': use_sim_time}.items()
+    # )
 
     spawn_turtlebot_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -65,13 +64,7 @@ def generate_launch_description():
     # Add the commands to the launch description
     ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)
-    ld.add_action(robot_state_publisher_cmd)
+    # ld.add_action(robot_state_publisher_cmd)
     ld.add_action(spawn_turtlebot_cmd)
 
     return ld
-
-
-    desc.add_action(spawn_turtlebot)
-    desc.add_action(robot_num)
-
-    return desc

@@ -50,6 +50,9 @@ def generate_launch_description():
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='true', description='')
     use_sim_time = LaunchConfiguration('use_sim_time')
 
+    namespace_arg = DeclareLaunchArgument('namespace', default_value='tb0')
+    namespace = LaunchConfiguration('namespace', default='tb0')
+
     x_pose_arg = DeclareLaunchArgument('x_pose', default_value='0.0')
     x_pose = LaunchConfiguration('x_pose')
     y_pose_arg = DeclareLaunchArgument('y_pose', default_value='0.0')
@@ -57,49 +60,37 @@ def generate_launch_description():
 
 
     # Obtain urdf from xacro files.
-    multi_turtlebot_sim_pkg_dir = get_package_share_directory('multi_robot')
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-    xacro_file_path = os.path.join(multi_turtlebot_sim_pkg_dir, 'urdf', 'turtlebot3_waffle.urdf.xacro')
-    robot_desc = Command(['xacro ', str(xacro_file_path), ' frame_prefix:=', robot_prefix, ' topic_prefix:=', robot_prefix])
-
-    # Includes gazebo_ros launch for gazebo
-    include_gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py'),
-        ),
-          launch_arguments = {
-              'world': PathJoinSubstitution([get_package_share_directory('turtlebot3_gazebo'),'worlds', 'empty_world.world']),
-              'gui': 'true',
-          }.items()
-    )
+    package_dir = get_package_share_directory('multi_robot')
+    urdf_file_path = os.path.join(package_dir, 'urdf', 'turtlebot3_waffle.urdf')
 
     robot_state_publisher = Node(
             package='robot_state_publisher',
+            namespace=namespace,
             executable='robot_state_publisher',
-            name='robot_state_publisher',
             output='screen',
-            namespace=robot_prefix,
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'robot_description': robot_desc,
-                'frame_prefix':
-                    PythonExpression(["'", LaunchConfiguration('robot_prefix'), "/'"])
-            }],
+            parameters=[{'use_sim_time': use_sim_time,
+                            'publish_frequency': 10.0}],
+            remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static')
+        ],
+            arguments=[urdf_file_path],
         )
 
     # Spawn robot
-    start_gazebo_ros_spawner_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=[
-            '-entity', PathJoinSubstitution([robot_prefix, 'waffle']),
-            '-topic', PathJoinSubstitution([robot_prefix, 'robot_description']),
-            '-x', x_pose,
-            '-y', y_pose,
-            '-z', '0.01'
-        ],
-        output='screen',
-    )
+    spawn_turtlebot3 = Node(
+            package='gazebo_ros',
+            executable='spawn_entity.py',
+            arguments=[
+                '-file', os.path.join(package_dir, 'model', 'turtlebot3_waffle', 'model.sdf'),
+                '-entity', namespace,
+                '-robot_namespace', namespace,
+                '-x', x_pose, '-y', y_pose,
+                '-z', '0.01', '-Y', '0.0',
+                '-unpause',
+            ],
+            output='screen',
+        )
 
     ld = LaunchDescription()
 
@@ -109,7 +100,7 @@ def generate_launch_description():
     ld.add_action(robot_prefix_arg)
     ld.add_action(use_sim_time_arg)
     ld.add_action(robot_state_publisher)
-    ld.add_action(include_gazebo)
-    ld.add_action(start_gazebo_ros_spawner_cmd)
+    ld.add_action(namespace_arg)
+    ld.add_action(spawn_turtlebot3)
 
     return ld

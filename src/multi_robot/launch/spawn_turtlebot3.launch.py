@@ -62,19 +62,13 @@ def generate_launch_description():
     xacro_file_path = os.path.join(multi_turtlebot_sim_pkg_dir, 'urdf', 'turtlebot3_waffle.urdf.xacro')
     robot_desc = Command(['xacro ', str(xacro_file_path), ' frame_prefix:=', robot_prefix, ' topic_prefix:=', robot_prefix])
 
-    world_name = LaunchConfiguration('world_name')
-    world_name_arg = DeclareLaunchArgument(
-          'world_name',
-          default_value='empty_world.world',
-          description='SDF world file name. [empty_world.world or turtlebot3_world.world]')
-
     # Includes gazebo_ros launch for gazebo
     include_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py'),
         ),
           launch_arguments = {
-              'world': PathJoinSubstitution([get_package_share_directory('turtlebot3_gazebo'),'worlds', world_name]),
+              'world': PathJoinSubstitution([get_package_share_directory('turtlebot3_gazebo'),'worlds', 'empty_world.world']),
               'gui': 'true',
           }.items()
     )
@@ -115,7 +109,6 @@ def generate_launch_description():
     ld.add_action(robot_prefix_arg)
     ld.add_action(use_sim_time_arg)
     ld.add_action(robot_state_publisher)
-    ld.add_action(world_name_arg)
     ld.add_action(include_gazebo)
     ld.add_action(start_gazebo_ros_spawner_cmd)
 

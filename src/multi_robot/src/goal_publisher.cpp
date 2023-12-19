@@ -1,111 +1,99 @@
-// Copyright 2016 Open Source Robotics Foundation, Inc.
-
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <nav2_msgs/action/navigate_to_pose.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+class NavigateToPoseNode : public rclcpp::Node
+{
+public:
+    using NavigateToPose = nav2_msgs::action::NavigateToPose;
+    using GoalHandle = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-
-/**
- * @brief MinimalPublisher class that inherits form the Node class in rclcpp
- * used to built a ros2 node
- *
- */
-class MinimalPublisher : public rclcpp::Node {
- public:
-  /**
-   * @brief Construct a new Minimal Publisher object
-   *  Create a publisher and publish messages to the topic "/topic" at 500ms
-   * intervals
-   */
-  MinimalPublisher() : Node("minimal_publisher"), count_(0) {
-    this->declare_parameter("pub_frequency", 750);
-    int para_freq = this->get_parameter("pub_frequency").as_int();
-    if (para_freq < 450) {
-      RCLCPP_FATAL(this->get_logger(),
-                   "Publish time too fast...\n Selecting 750ms");
-      frequency = 750;
-    } else if (para_freq > 3000) {
-      RCLCPP_ERROR(this->get_logger(), "Publish time not optimal");
-      frequency = para_freq;
-    } else {
-      RCLCPP_DEBUG(this->get_logger(), "Setting custom publish frequency");
-      frequency = para_freq;
+    NavigateToPoseNode(const std::string &namespace_)
+        : Node("navigate_to_pose_node_" + namespace_),
+          client_(rclcpp_action::create_client<NavigateToPose>(this, "/" + namespace_ + "/navigate_to_pose")),
+          goal_handle_future()
+    {
+        pose_publisher_ = create_publisher<geometry_msgs::msg::PoseStamped>("/" + namespace_ + "/goal_pose", 10);
+        timer_ = create_wall_timer(std::chrono::seconds(2), std::bind(&NavigateToPoseNode::sendGoal, this));
     }
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-    timer_ = this->create_wall_timer(
-        std::chrono::milliseconds(frequency),
-        std::bind(&MinimalPublisher::timer_callback, this));
-  }
 
- private:
-  /**
-   * @brief A member function that runs based on set timer
-   *
-   */
-  void timer_callback() {
-    auto message = std_msgs::msg::String();
-    message.data = "Lowell's message number " + std::to_string(count_++);
-    RCLCPP_INFO(this->get_logger(), "Publishing message: '%s'",
-                message.data.c_str());
-    publisher_->publish(message);
-  }
+private:
+    rclcpp_action::Client<NavigateToPose>::SharedPtr client_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::shared_future<GoalHandle::SharedPtr> goal_handle_future;
+
+    void sendGoal()
+    {
+        auto goal_msg = NavigateToPose::Goal();
+        goal_msg.pose.pose.position.x = -3.2;
+        goal_msg.pose.pose.position.y = 6.20;
+        goal_msg.pose.pose.position.z = 0.0;
+        goal_msg.pose.pose.orientation.x = 0.0;
+        goal_msg.pose.pose.orientation.y = 0.0;
+        goal_msg.pose.pose.orientation.z = 0.0;
+        goal_msg.pose.pose.orientation.w = 1.0;
+
+        auto goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
+        goal_options.result_callback = std::bind(&NavigateToPoseNode::resultCallback, this, std::placeholders::_1);
+        // goal_options.feedback_callback = std::bind(&NavigateToPoseNode::feedbackCallback, this, std::placeholders::_1, std::placeholders::_2);
+        goal_options.goal_response_callback = std::bind(&NavigateToPoseNode::goalResponseCallback, this, std::placeholders::_1);
+
+        if (!client_->wait_for_action_server(std::chrono::seconds(2)))
+        {
+            RCLCPP_ERROR(get_logger(), "Action server not available after waiting");
+            return;
+        }
+
+        goal_handle_future = client_->async_send_goal(goal_msg, goal_options);
+    }
+
+    void goalResponseCallback(const GoalHandle::SharedPtr &goal_handle)
+    {
+        if (goal_handle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED)
+        {
+            RCLCPP_INFO(get_logger(), "Goal accepted by server");
+        }
+        else
+        {
+            RCLCPP_INFO(get_logger(), "Goal rejected by server");
+        }
+    }
 
 
-  /**
-   * @brief Create a timer shared pointer from rclcpp to be used in
-   * implementation
-   *
-   */
-  rclcpp::TimerBase::SharedPtr timer_;
+    // void feedbackCallback(const GoalHandle::SharedPtr & /*goal_handle*/, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
+    //   {
+    //       RCLCPP_INFO(get_logger(), "Received feedback: %f%%", feedback->distance_travelled * 100.0);
+    //   }
 
-  /**
-   * @brief Create a publisher shared pointer from rclcpp to be used in the
-   * implementation
-   *
-   */
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 
-  /**
-   * @brief Create a count variable to increment the message number in published
-   * message
-   *
-   */
-  size_t count_;
-
-  /**
-   * @brief Create a frenquency variable from talker publish frequency
-   *
-   */
-  int frequency;
+    void resultCallback(const GoalHandle::WrappedResult &result)
+    {
+        switch (result.code)
+        {
+        case rclcpp_action::ResultCode::SUCCEEDED:
+            RCLCPP_INFO(get_logger(), "Goal succeeded!");
+            break;
+        case rclcpp_action::ResultCode::ABORTED:
+            RCLCPP_WARN(get_logger(), "Goal was aborted");
+            break;
+        case rclcpp_action::ResultCode::CANCELED:
+            RCLCPP_WARN(get_logger(), "Goal was canceled");
+            break;
+        default:
+            RCLCPP_ERROR(get_logger(), "Unknown result code");
+            break;
+        }
+    }
 };
 
-/**
- * @brief The main implementation of the class
- *
- * @param argc Console input argument
- * @param argv Console input argument
- * @return int
- */
-int main(int argc, char* argv[]) {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
-  rclcpp::shutdown();
-  return 0;
+int main(int argc, char *argv[])
+{
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<NavigateToPoseNode>("tb1");
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }

@@ -15,7 +15,8 @@ find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
-find_package(nav_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sar REQUIRED) # add sar
 
@@ -104,7 +105,7 @@ target_link_libraries(cam_sub
   sar)
 
 ament_target_dependencies(goal_pub
-  rclcpp std_msgs)
+  rclcpp std_msgs nav2_msgs rclcpp_action)
 target_link_libraries(goal_pub
   sar)
 

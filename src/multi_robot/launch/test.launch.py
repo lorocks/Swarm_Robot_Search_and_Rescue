@@ -52,7 +52,7 @@ def generate_launch_description():
             os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py'),
         ),
           launch_arguments = {
-              'world': PathJoinSubstitution([get_package_share_directory('turtlebot3_gazebo'),'worlds', 'turtlebot3_world.world']),
+              'world': PathJoinSubstitution([get_package_share_directory('turtlebot3_gazebo'),'worlds', 'person.world']),
               'gui': 'true',
           }.items()
     )
@@ -194,21 +194,21 @@ def generate_launch_description():
 
         ld.add_action(post_spawn_event)
 
-    for robot in robots:
-        run_goal = ExecuteProcess(
-            cmd=['ros2', 'run', 'multi_robot', 'goal_pub', robot['name']],
-            shell = True
-        )
+    # for robot in robots:
+    #     run_goal = ExecuteProcess(
+    #         cmd=['ros2', 'run', 'multi_robot', 'goal_pub', robot['name']],
+    #         shell = True
+    #     )
 
 
-        post_node_run_event = RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=last_action,
-                on_exit=[run_goal],
-            )
-        )
+    #     post_node_run_event = RegisterEventHandler(
+    #         event_handler=OnProcessExit(
+    #             target_action=last_action,
+    #             on_exit=[run_goal],
+    #         )
+    #     )
 
-        ld.add_action(post_node_run_event)      
+    #     ld.add_action(post_node_run_event)      
     
 
     return ld

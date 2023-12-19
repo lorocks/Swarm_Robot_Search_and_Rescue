@@ -17,17 +17,21 @@
 import os
 
 from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
+from launch import LaunchDescription, LaunchContext
 from launch.actions import DeclareLaunchArgument
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
+    use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     package_dir = get_package_share_directory('multi_robot')
     nav_dir = get_package_share_directory('nav2_bringup')
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='False')
+    use_rviz = LaunchConfiguration('use_rviz', default='False')
     map_dir = LaunchConfiguration(
         'map',
         default=os.path.join(
@@ -38,11 +42,6 @@ def generate_launch_description():
     param_dir = LaunchConfiguration(
         'params_file',
         default=os.path.join(package_dir, 'param', 'waffle.yaml'))
-
-    rviz_config_dir = os.path.join(
-        nav_dir,
-        'rviz',
-        'nav2_default_view.rviz')
     
     nav2 = IncludeLaunchDescription(
             PythonLaunchDescriptionSource([os.path.join(nav_dir, 'launch'), '/bringup_launch.py']),
@@ -53,16 +52,19 @@ def generate_launch_description():
         )
 
     rviz = Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            arguments=['-d', rviz_config_dir],
-            parameters=[{'use_sim_time': use_sim_time}],
-            output='screen')
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', os.path.join(nav_dir, 'rviz', 'nav2_default_view.rviz')],
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen',
+        condition=IfCondition(use_rviz),
+        )
 
     ld = LaunchDescription()
-
+    
     ld.add_action(nav2)
+    ld.add_action(use_rviz_arg)
     ld.add_action(rviz)
 
     return ld

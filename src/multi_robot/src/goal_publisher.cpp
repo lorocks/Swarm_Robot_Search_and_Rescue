@@ -2,17 +2,26 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/msg/image.hpp> 
 #include <rclcpp_action/rclcpp_action.hpp>
 #include "goals.hpp"
+#include "search.hpp"
 
 class NavigateToPoseNode : public rclcpp::Node
 {
 public:
     NavigateToPoseNode(const std::string& robot_namespace)
-        : Node("navigate_to_pose_client_" + robot_namespace), present_goal(0), robot_namespace_(robot_namespace)
+        : Node("navigate_to_pose_client_" + robot_namespace), present_goal(0), robot_namespace_(robot_namespace),
+          ObjectSearch("path/to/your/model.onnx", "path/to/your/coco.names")
     {
         // Create an ActionClient for the NavigateToPose action
         goal_send = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "/" + robot_namespace + "/navigate_to_pose");
+
+        image_subscriber_ = create_subscription<sensor_msgs::msg::Image>(
+            "/" + robot_namespace + "/camera/image_raw",
+            10,
+            std::bind(&NavigateToPoseNode::imageCallback, this, std::placeholders::_1));
 
         // Wait for the action server to be available
         if (!goal_send->wait_for_action_server(std::chrono::seconds(10)))
@@ -104,6 +113,29 @@ private:
         }
     }
 
+    void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg)
+    {
+        // Convert the ROS image from the robots to the OpenCV image
+        cv_bridge::CvImagePtr cv_ptr;
+        try
+        {
+            cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+        }
+        catch (cv_bridge::Exception& e)
+        {
+            RCLCPP_ERROR(get_logger(), "CV Bridge Exception: %s", e.what());
+            return;
+        }
+
+        // Run the object detection on the camera
+        if (ObjectSearch.runObjectDetection(cv_ptr->image))
+        {
+            // Object found, cancel goals for both robots
+            RCLCPP_INFO(get_logger(), "Object found! Cancelling goals for %s", robot_namespace_.c_str());
+            future_goal_handle->cancel_goal();
+        }
+    }
+
     std::vector<GoalPosition> generateGoalListRobot1()
     {
         // Create a list of GoalPositions with random values for robot 1
@@ -132,6 +164,8 @@ private:
     size_t present_goal;
     std::string robot_namespace_;
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr goal_send;
+    rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr future_goal_handle;
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscriber_;
 };
 
 int main(int argc, char *argv[])

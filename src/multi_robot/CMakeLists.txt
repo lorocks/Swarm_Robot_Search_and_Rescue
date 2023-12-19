@@ -106,7 +106,7 @@ target_link_libraries(cam_sub
   sar)
 
 ament_target_dependencies(goal_pub
-  rclcpp std_msgs nav2_msgs rclcpp_action nav2_map_server)
+  rclcpp std_msgs nav2_msgs rclcpp_action nav2_map_server cv_bridge sensor_msgs)
 target_link_libraries(goal_pub
   sar)
 

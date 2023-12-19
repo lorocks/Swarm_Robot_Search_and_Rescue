@@ -15,6 +15,7 @@
   <depend>cv_bridge</depend>
   <depend>nav2_msgs</depend>
   <depend>rclcpp_action</depend>
+  <depend>nav2_map_server</depend>
   <depend>image_transport</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>

@@ -3,6 +3,7 @@
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
+#include "goals.hpp"
 
 class NavigateToPoseNode : public rclcpp::Node
 {
@@ -10,36 +11,37 @@ public:
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
     using GoalHandle = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-    NavigateToPoseNode(const std::string &namespace_)
+    NavigateToPoseNode(const std::string &namespace_, GoalGenerator &goalGenerator)
         : Node("navigate_to_pose_node_" + namespace_),
           client_(rclcpp_action::create_client<NavigateToPose>(this, "/" + namespace_ + "/navigate_to_pose")),
-          goal_handle_future()
-    {
-        pose_publisher_ = create_publisher<geometry_msgs::msg::PoseStamped>("/" + namespace_ + "/goal_pose", 10);
-        timer_ = create_wall_timer(std::chrono::seconds(2), std::bind(&NavigateToPoseNode::sendGoal, this));
-    }
+          pose_publisher_(create_publisher<geometry_msgs::msg::PoseStamped>("/" + namespace_ + "/goal_pose", 10)),
+          timer_(create_wall_timer(std::chrono::seconds(2), std::bind(&NavigateToPoseNode::sendGoal, this))),
+          goal_generator_(goalGenerator)  // Pass the GoalGenerator as a reference
+    {}
 
 private:
     rclcpp_action::Client<NavigateToPose>::SharedPtr client_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
-    std::shared_future<GoalHandle::SharedPtr> goal_handle_future;
+    GoalGenerator &goal_generator_;  // Reference to the GoalGenerator instance
 
     void sendGoal()
     {
         auto goal_msg = NavigateToPose::Goal();
-        goal_msg.pose.pose.position.x = -3.2;
-        goal_msg.pose.pose.position.y = 6.20;
-        goal_msg.pose.pose.position.z = 0.0;
-        goal_msg.pose.pose.orientation.x = 0.0;
-        goal_msg.pose.pose.orientation.y = 0.0;
-        goal_msg.pose.pose.orientation.z = 0.0;
-        goal_msg.pose.pose.orientation.w = 1.0;
+
+        // Use the GoalGenerator to get random x and y positions
+        GoalPosition randomGoal = goal_generator_.generateRandomGoal();
+
+        goal_msg.pose.pose.position.x = randomGoal.x;
+        goal_msg.pose.pose.position.y = randomGoal.y;
+        goal_msg.pose.pose.position.z = 0.0;  // Constant z value and orientations
+        goal_msg.pose.pose.orientation.x = 0.0;  
+        goal_msg.pose.pose.orientation.y = 0.0;  
+        goal_msg.pose.pose.orientation.z = 0.0;  
+        goal_msg.pose.pose.orientation.w = 1.0;  
 
         auto goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
         goal_options.result_callback = std::bind(&NavigateToPoseNode::resultCallback, this, std::placeholders::_1);
-        // goal_options.feedback_callback = std::bind(&NavigateToPoseNode::feedbackCallback, this, std::placeholders::_1, std::placeholders::_2);
-        goal_options.goal_response_callback = std::bind(&NavigateToPoseNode::goalResponseCallback, this, std::placeholders::_1);
 
         if (!client_->wait_for_action_server(std::chrono::seconds(2)))
         {
@@ -47,27 +49,8 @@ private:
             return;
         }
 
-        goal_handle_future = client_->async_send_goal(goal_msg, goal_options);
+        client_->async_send_goal(goal_msg, goal_options);
     }
-
-    void goalResponseCallback(const GoalHandle::SharedPtr &goal_handle)
-    {
-        if (goal_handle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED)
-        {
-            RCLCPP_INFO(get_logger(), "Goal accepted by server");
-        }
-        else
-        {
-            RCLCPP_INFO(get_logger(), "Goal rejected by server");
-        }
-    }
-
-
-    // void feedbackCallback(const GoalHandle::SharedPtr & /*goal_handle*/, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
-    //   {
-    //       RCLCPP_INFO(get_logger(), "Received feedback: %f%%", feedback->distance_travelled * 100.0);
-    //   }
-
 
     void resultCallback(const GoalHandle::WrappedResult &result)
     {
@@ -89,11 +72,18 @@ private:
     }
 };
 
+// Main.cpp
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<NavigateToPoseNode>("tb1");
+
+    GoalGenerator goalGenerator(10, 10);
+
+    // Create the NavigateToPoseNode, passing the GoalGenerator instance
+    auto node = std::make_shared<NavigateToPoseNode>("tb1", goalGenerator);
+
     rclcpp::spin(node);
     rclcpp::shutdown();
+
     return 0;
 }

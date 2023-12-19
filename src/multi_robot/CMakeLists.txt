@@ -15,6 +15,8 @@ find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sar REQUIRED) # add sar
 
 ############################################
@@ -106,6 +108,7 @@ ament_target_dependencies(goal_pub
 target_link_libraries(goal_pub
   sar)
 
+
 ###################################
 # Installation
 ###################################
@@ -126,6 +129,11 @@ install(DIRECTORY
   rviz
   DESTINATION share/${PROJECT_NAME}
 )
+
+install(
+    DIRECTORY include/multi_robot
+    DESTINATION include
+    )
 
 ## Install some arbitrary executables
 install(PROGRAMS      # want to make the file executable (ie. chmod a+x)

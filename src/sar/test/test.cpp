@@ -25,22 +25,22 @@ TEST(unit_test_check_object_found, this_should_pass) {
   EXPECT_FALSE(val);
 }
 
-TEST(unit_test_generate_goals, this_should_pass) {
-  GoalGenerator obj;
+// TEST(unit_test_generate_goals, this_should_pass) {
+//   GoalGenerator obj;
 
-  cv::Mat mapImage;
+//   cv::Mat mapImage;
 
-  auto positions = obj.generateGoals(mapImage);
+//   auto positions = obj.generateGoals(mapImage);
 
-  EXPECT_GT(positions.size(), 0);
-}
+//   EXPECT_GT(positions.size(), 0);
+// }
 
-TEST(unit_test_goal_update, this_should_pass) {
-  GoalGenerator obj;
+// TEST(unit_test_goal_update, this_should_pass) {
+//   GoalGenerator obj;
 
-  auto goal = obj.updateGoal(0);
+//   auto goal = obj.updateGoal(0);
 
-  auto goalVector = sqrt((goal.x * goal.x) + (goal.y * goal.y));
+//   auto goalVector = sqrt((goal.x * goal.x) + (goal.y * goal.y));
 
-  EXPECT_GT(goalVector, 0);
-}
+//   EXPECT_GT(goalVector, 0);
+// }

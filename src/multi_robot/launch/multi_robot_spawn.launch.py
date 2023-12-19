@@ -9,7 +9,7 @@ from launch.event_handlers import OnProcessExit
 from ament_index_python.packages import get_package_share_directory
 import os
 
-n = 3
+n = 2
 
 def get_num(context: LaunchContext, robot_num):
     num_str = context.perform_substitution(robot_num)
@@ -28,7 +28,7 @@ def generate_launch_description():
 
     spawn_robots = []
     for i in range(n):
-        x_pose = LaunchConfiguration('x_pose', default=f'{i}')
+        x_pose = LaunchConfiguration('x_pose', default=f'{3*i}')
         y_pose = LaunchConfiguration('y_pose', default='0.0')
         spawn_robots.append(
                 IncludeLaunchDescription(

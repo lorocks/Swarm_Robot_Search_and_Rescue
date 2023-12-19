@@ -14,14 +14,17 @@ import os
 ld = LaunchDescription()
 
 def get_num(context: LaunchContext, robot_num, use_rviz):
+    print("function time babbeyy")
     num_str = context.perform_substitution(robot_num)
-    rviz = context.perform_substitution(use_rviz)
-    print(num_str)
+    rviz = context.perform_substitution(use_rviz)    
+
     spawned = None
+
     for i in range(int(num_str)):
+        # print(spawned)
         x_pose = LaunchConfiguration('x_pose', default=f'-2')
         y_pose = LaunchConfiguration('y_pose', default=f'{i-1}')
-        spawn = IncludeLaunchDescription(
+        spawn_robot = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(os.path.join(get_package_share_directory('multi_robot'), 'launch'), 'spawn_turtlebot3.launch.py')
                 ),
@@ -32,45 +35,64 @@ def get_num(context: LaunchContext, robot_num, use_rviz):
                 }.items()
             )
         
+        # ld.add_action(spawn_robot)
+        
+        spawn_nav2 = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    os.path.join(os.path.join(get_package_share_directory('multi_robot'), 'launch'), 'navigation2.launch.py')
+                ),
+                launch_arguments={
+                    'namespace': f'tb{i}',
+                }.items()
+            )
+        
+        ld.add_action(spawn_robot)
+        ld.add_action(spawn_nav2)
+        
         if spawned is None:
-            ld.add_action(spawn)
+            ld.add_action(spawn_robot)
+            ld.add_action(spawn_nav2)
         else:
-            spawn_turtlebot3 = RegisterEventHandler(
+            spawn_turtlebot_first = RegisterEventHandler(
                 event_handler=OnProcessExit(
                     target_action=spawned,
-                    on_exit=[spawn],
+                    # on_exit=[spawn_robot]
+                    on_exit=[spawn_robot, spawn_nav2],
                 )
             )
 
-            ld.add_action(spawn_turtlebot3)
-        spawned = spawn
+            ld.add_action(spawn_turtlebot_first)
+        spawned = spawn_robot
 
-        spawn = IncludeLaunchDescription(
+    for i in range(int(num_str)):
+        spawn_rviz = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(os.path.join(get_package_share_directory('multi_robot'), 'launch'), 'navigation2.launch.py')
+                    os.path.join(os.path.join(get_package_share_directory('multi_robot'), 'launch'), 'rviz.launch.py')
                 ),
                 launch_arguments={
                     'x_pose': x_pose,
                     'y_pose': y_pose,
                     'namespace': f'tb{i}',
-                    'use_rviz': rviz,
+                    'use_rviz': use_rviz,
                 }.items()
             )
-        
-        spawn_nav2 = RegisterEventHandler(
+
+        spawn_prev_first = RegisterEventHandler(
                 event_handler=OnProcessExit(
                     target_action=spawned,
-                    on_exit=[spawn],
+                    on_exit=[spawn_rviz],
                 )
             )
-        ld.add_action(spawn_nav2)
-        spawned = spawn
+        ld.add_action(spawn_prev_first)
+        spawned = spawn_rviz
 
 
 """@brief Generate the launch descriptions for ROS
 """
 def generate_launch_description():
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    package_dir = get_package_share_directory('multi_robot')
+
 
     robot_num_arg = DeclareLaunchArgument('robot_num', default_value='2')
     robot_num = LaunchConfiguration("robot_num", default='2')
@@ -94,7 +116,7 @@ def generate_launch_description():
         executable='map_server',
         name='map_server',
         output='screen',
-        parameters=[{'yaml_filename': os.path.join(get_package_share_directory('turtlebot3_navigation2'), 'map', 'map.yaml'),
+        parameters=[{'yaml_filename': os.path.join(package_dir, 'map', 'map.yaml'),
                      },],
         remappings=[
             ('/tf', 'tf'),
@@ -105,15 +127,17 @@ def generate_launch_description():
             executable='lifecycle_manager',
             name='lifecycle_manager_map_server',
             output='screen',
-            parameters=[{'use_sim_time': 'True'},
+            parameters=[{'use_sim_time': True},
                         {'autostart': True},
                         {'node_names': ['map_server']}])
+    
+
+    ld.add_action(map_server)
+    ld.add_action(map_server_lifecyle)
     
     ld.add_action(robot_num_arg)
     ld.add_action(use_rviz_arg)
     ld.add_action(function)
     ld.add_action(gazebo)
-    ld.add_action(map_server)
-    ld.add_action(map_server_lifecyle)
 
     return ld

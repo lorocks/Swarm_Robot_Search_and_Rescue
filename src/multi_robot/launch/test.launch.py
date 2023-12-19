@@ -41,7 +41,6 @@ def generate_launch_description():
     multi_robot = get_package_share_directory('multi_robot')
 
     package_dir = get_package_share_directory('multi_robot')
-    nav_launch_dir = os.path.join(package_dir, 'launch', 'nav2_bringup')
 
     rviz_config_file = LaunchConfiguration('rviz_config_file')
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
@@ -72,7 +71,7 @@ def generate_launch_description():
     params_file = LaunchConfiguration('nav_params_file')
     declare_params_file_cmd = DeclareLaunchArgument(
         'nav_params_file',
-        default_value=os.path.join(package_dir, 'param', 'waffle.yaml'),
+        default_value=os.path.join(package_dir, 'param', 'nav2_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
     
      
@@ -89,7 +88,7 @@ def generate_launch_description():
         executable='map_server',
         name='map_server',
         output='screen',
-        parameters=[{'yaml_filename': os.path.join(get_package_share_directory('turtlebot3_navigation2'), 'map', 'map.yaml'),
+        parameters=[{'yaml_filename': os.path.join(package_dir, 'map', 'map.yaml'),
                      },],
         remappings=remappings)
 
@@ -146,7 +145,7 @@ def generate_launch_description():
 
         bringup_cmd = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(nav_launch_dir, 'bringup_launch.py')),
+                    os.path.join(package_dir, 'launch', 'bringup_launch.py')),
                     launch_arguments={  
                                     'slam': 'False',
                                     'namespace': namespace,
@@ -204,7 +203,7 @@ def generate_launch_description():
 
         rviz_cmd = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(nav_launch_dir, 'rviz_launch.py')),
+                os.path.join(package_dir, 'launch', 'rviz_launch.py')),
                 launch_arguments={'use_sim_time': use_sim_time, 
                                   'namespace': namespace,
                                   'use_namespace': 'True',

@@ -54,6 +54,8 @@ def generate_launch_description():
     y_pose_arg = DeclareLaunchArgument('y_pose', default_value='0.0')
     y_pose = LaunchConfiguration('y_pose')
 
+    package_dir = get_package_share_directory('multi_robot')
+
 
     # Obtain urdf from xacro files.
     package_dir = get_package_share_directory('multi_robot')
@@ -98,12 +100,12 @@ def generate_launch_description():
             ],
             output='screen',
         )
-    
+
     map_server=Node(package='nav2_map_server',
         executable='map_server',
         name='map_server',
         output='screen',
-        parameters=[{'yaml_filename': os.path.join(get_package_share_directory('turtlebot3_navigation2'), 'map', 'map.yaml'),
+        parameters=[{'yaml_filename': os.path.join(package_dir, 'map', 'map.yaml'),
                      },],
         remappings=[
             ('/tf', 'tf'),

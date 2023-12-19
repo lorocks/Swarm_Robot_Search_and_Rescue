@@ -121,6 +121,9 @@ install(DIRECTORY
   launch
   meshes
   urdf
+  map
+  param
+  rviz
   DESTINATION share/${PROJECT_NAME}
 )
 

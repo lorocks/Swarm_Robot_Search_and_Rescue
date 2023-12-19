@@ -124,7 +124,7 @@ install(TARGETS
 # install launch files
 install(DIRECTORY
   launch
-  meshes
+  model
   urdf
   map
   param

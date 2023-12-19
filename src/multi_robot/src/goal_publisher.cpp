@@ -5,54 +5,50 @@
 #include <rclcpp_action/rclcpp_action.hpp>
 #include "goals.hpp"
 
-class NavigateToPoseNode : public rclcpp::Node
+class NavigateToPoseClient : public rclcpp::Node
 {
 public:
-    using NavigateToPose = nav2_msgs::action::NavigateToPose;
-    using GoalHandle = rclcpp_action::ClientGoalHandle<NavigateToPose>;
-
-    NavigateToPoseNode(const std::string &namespace_, GoalGenerator &goalGenerator)
-        : Node("navigate_to_pose_node_" + namespace_),
-          client_(rclcpp_action::create_client<NavigateToPose>(this, "/" + namespace_ + "/navigate_to_pose")),
-          pose_publisher_(create_publisher<geometry_msgs::msg::PoseStamped>("/" + namespace_ + "/goal_pose", 10)),
-          timer_(create_wall_timer(std::chrono::seconds(2), std::bind(&NavigateToPoseNode::sendGoal, this))),
-          goal_generator_(goalGenerator)  // Pass the GoalGenerator as a reference
-    {}
-
-private:
-    rclcpp_action::Client<NavigateToPose>::SharedPtr client_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
-    rclcpp::TimerBase::SharedPtr timer_;
-    GoalGenerator &goal_generator_;  // Reference to the GoalGenerator instance
-
-    void sendGoal()
+    NavigateToPoseClient()
+        : Node("navigate_to_pose_client")
     {
-        auto goal_msg = NavigateToPose::Goal();
+        // Create an ActionClient for the NavigateToPose action
+        action_client_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "/navigate_to_pose");
 
-        // Use the GoalGenerator to get random x and y positions
-        GoalPosition randomGoal = goal_generator_.generateRandomGoal();
-
-        goal_msg.pose.pose.position.x = randomGoal.x;
-        goal_msg.pose.pose.position.y = randomGoal.y;
-        goal_msg.pose.pose.position.z = 0.0;  // Constant z value and orientations
-        goal_msg.pose.pose.orientation.x = 0.0;  
-        goal_msg.pose.pose.orientation.y = 0.0;  
-        goal_msg.pose.pose.orientation.z = 0.0;  
-        goal_msg.pose.pose.orientation.w = 1.0;  
-
-        auto goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
-        goal_options.result_callback = std::bind(&NavigateToPoseNode::resultCallback, this, std::placeholders::_1);
-
-        if (!client_->wait_for_action_server(std::chrono::seconds(2)))
+        // Wait for the action server to be available
+        if (!action_client_->wait_for_action_server(std::chrono::seconds(10)))
         {
-            RCLCPP_ERROR(get_logger(), "Action server not available after waiting");
+            RCLCPP_ERROR(get_logger(), "Action server not available");
             return;
         }
 
-        client_->async_send_goal(goal_msg, goal_options);
+        // Create a GoalGenerator instance with map width and height as 1
+        GoalGenerator goal_generator(1, 1);
+
+        // Generate a random goal position
+        GoalPosition goal_position = goal_generator.generateRandomGoal();
+
+        // Create a goal for the NavigateToPose action with constant z and orientation values
+        auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
+        goal_msg.pose.header.frame_id = "map";
+        goal_msg.pose.pose.position.x = goal_position.x; //0.21;
+        goal_msg.pose.pose.position.y = goal_position.y; //-1.84;
+        goal_msg.pose.pose.position.z = 0.0;  // Constant z value
+        goal_msg.pose.pose.orientation.x = 0.0;
+        goal_msg.pose.pose.orientation.y = 0.0;
+        goal_msg.pose.pose.orientation.z = 0.0;
+        goal_msg.pose.pose.orientation.w = 1.0000000;
+
+        // Send the goal to the action server
+        auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+        send_goal_options.result_callback = std::bind(&NavigateToPoseClient::result_callback, this, std::placeholders::_1);
+        auto future_goal_handle = action_client_->async_send_goal(goal_msg, send_goal_options);
+
+        // Wait for the result
+        rclcpp::spin_until_future_complete(this->get_node_base_interface(), future_goal_handle);
     }
 
-    void resultCallback(const GoalHandle::WrappedResult &result)
+private:
+    void result_callback(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult &result)
     {
         switch (result.code)
         {
@@ -60,30 +56,21 @@ private:
             RCLCPP_INFO(get_logger(), "Goal succeeded!");
             break;
         case rclcpp_action::ResultCode::ABORTED:
-            RCLCPP_WARN(get_logger(), "Goal was aborted");
-            break;
-        case rclcpp_action::ResultCode::CANCELED:
-            RCLCPP_WARN(get_logger(), "Goal was canceled");
+            RCLCPP_ERROR(get_logger(), "Goal was aborted");
             break;
         default:
             RCLCPP_ERROR(get_logger(), "Unknown result code");
             break;
         }
     }
+
+    rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr action_client_;
 };
 
-// Main.cpp
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-
-    GoalGenerator goalGenerator(10, 10);
-
-    // Create the NavigateToPoseNode, passing the GoalGenerator instance
-    auto node = std::make_shared<NavigateToPoseNode>("tb1", goalGenerator);
-
-    rclcpp::spin(node);
+    rclcpp::spin(std::make_shared<NavigateToPoseClient>());
     rclcpp::shutdown();
-
     return 0;
 }

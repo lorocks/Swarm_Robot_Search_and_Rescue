@@ -64,6 +64,10 @@ jobs:
           sudo apt update
           sudo apt install -y software-properties-common
           sudo apt install -y doxygen lcov gcovr
+
+      - name: Install OpenCV
+        run: |
+          sudo apt install libopencv-dev
           
       # Run all unit test, integration test, and generate combined coverage report
       - name: Build, run unit test, and generate coverage report

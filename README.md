@@ -40,6 +40,7 @@ The project will take two weeks to complete over two iterations, consisting of P
 # Links
 ## Video Links
 [Final Project Phase 1](https://youtu.be/q-IzEfy1U-s)
+[Final Project Phase 2, Implementation Run](https://youtu.be/q_XyEkmD19g)
 
 ## AIP Document Links
 [AIP Google Sheet](https://docs.google.com/spreadsheets/d/1iOmKEHb6u9iLjWMfp7kFqTMgQoor1WnGJIepN5Y3yEI/edit#gid=0)
@@ -139,6 +140,7 @@ Unit Tests
 
 # Future Works
  - Path planning approach for exploration instead of random goal generation
+ - Dynamic robot spawn locations
 
 # Build Commands
 ## How to generate package dependency graph

@@ -92,11 +92,11 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
       float confidence = data[4];
       if (confidence > 0.5){
         float * classes_scores = data + 5;
-        cv::Mat scores(1, 80, CV_32FC1, classes_scores);
+        cv::Mat scores(1, classNames.size(), CV_32FC1, classes_scores);
         cv::Point class_id;
         double max_score;
         cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
-        if ((class_id.x == 'person') || (class_id.x == 'ball')){
+        if (class_id.x == 1){
           objectFound = true;
 
           return true;

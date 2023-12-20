@@ -5,12 +5,12 @@
 #include "goals.hpp"
 #include "search.hpp"
 
-TEST(unit_test_object_detect, this_should_pass) {
-  ObjectSearch obj("../../models/modelfile", "../../models/configfile");
+TEST(unit_test_object_detect_ball, this_should_pass) {
+  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx", "../../../src/sar/models/coco.names");
 
   // Load a static image using cv::imread("../../assets/image.jpg"); and pass it
   // through the runObjectDetection method
-  cv::Mat image;
+  cv::Mat image = cv::imread("../../../src/sar/assets/Main.jpg");
 
   bool val = obj.runObjectDetection(image);
 
@@ -18,7 +18,7 @@ TEST(unit_test_object_detect, this_should_pass) {
 }
 
 TEST(unit_test_check_object_found, this_should_pass) {
-  ObjectSearch obj("../../models/modelfile", "../../models/configfile");
+  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx", "../../../src/sar/models/coco.names");
 
   bool val = obj.isObjectFound();
 

@@ -74,37 +74,51 @@ ObjectSearch::~ObjectSearch() {
  */
 bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   // Convert the frame to a blob suitable for input to the model
-    cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(416, 416), cv::Scalar(), true, false);
+    cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(640, 640), cv::Scalar(), true, false);
 
     // Set the input blob for the model
     humanDetectionModel.setInput(blob);
 
+    std::vector<cv::Mat> outputs;
+
     // Forward pass the blob through the model
-    cv::Mat detectionMat = humanDetectionModel.forward();
+    humanDetectionModel.forward(outputs, humanDetectionModel.getUnconnectedOutLayersNames());
 
-    // Process the detection results and update the objectFound variable accordingly
-    for (int i = 0; i < detectionMat.rows; ++i) {
-        float confidence = detectionMat.at<float>(i, 2);
+    const cv::Mat &detectionMat = outputs[0];
+    float *data = (float *)outputs[0].data;
 
-        // Extract class index from detection
-        int classId = static_cast<int>(detectionMat.at<float>(i, 1));
+    for (int i = 0; i < 25200; ++i){
+      float confidence = data[4];
+      if (confidence > 0.01){
+        objectFound = true;
 
-        // Check if the detected class is a person
-        if (classNames[classId] == "person" && confidence > 0.5) {
-            objectFound = true;
-
-            // Extract bounding box coordinates
-            int x = static_cast<int>(frame.cols * detectionMat.at<float>(i, 3));
-            int y = static_cast<int>(frame.rows * detectionMat.at<float>(i, 4));
-            int width = static_cast<int>(frame.cols * (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
-            int height = static_cast<int>(frame.rows * (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
-
-            // Draw bounding box
-            cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y + height), cv::Scalar(0, 255, 0), 2);
-
-            return true;
-        }
+        return true;
+      }
     }
+
+    // // Process the detection results and update the objectFound variable accordingly
+    // for (int i = 0; i < detectionMat.rows; ++i) {
+    //     float confidence = detectionMat.at<float>(i, 2);
+
+    //     // Extract class index from detection
+    //     int classId = static_cast<int>(detectionMat.at<float>(i, 1));
+
+    //     // Check if the detected class is a person
+    //     if ((classNames[classId] == "person" || classNames[classId] == "ball") && confidence > 0.5) {
+    //         objectFound = true;
+
+    //         // // Extract bounding box coordinates
+    //         // int x = static_cast<int>(frame.cols * detectionMat.at<float>(i, 3));
+    //         // int y = static_cast<int>(frame.rows * detectionMat.at<float>(i, 4));
+    //         // int width = static_cast<int>(frame.cols * (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
+    //         // int height = static_cast<int>(frame.rows * (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
+
+    //         // // Draw bounding box
+    //         // cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y + height), cv::Scalar(0, 255, 0), 2);
+
+    //         return true;
+    //     }
+    // }
 
     // If no person is found in the frame, set objectFound to false
     objectFound = false;

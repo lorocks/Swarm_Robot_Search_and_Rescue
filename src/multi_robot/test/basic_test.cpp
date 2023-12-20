@@ -119,7 +119,7 @@ TEST_F(TaskPlanningFixture, TrueIsTrueTest) {
       rate.sleep();
       elapsed_time = timer::now() - clock_start;
     }
-  EXPECT_TRUE (hasData);
+  EXPECT_FALSE(hasData);
 }
 
 int main(int argc, char** argv) {

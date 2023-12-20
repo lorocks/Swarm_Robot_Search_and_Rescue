@@ -125,10 +125,6 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(
-    DIRECTORY include/multi_robot
-    DESTINATION include
-    )
 
 ## Install some arbitrary executables
 install(PROGRAMS      # want to make the file executable (ie. chmod a+x)

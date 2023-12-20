@@ -15,6 +15,10 @@ find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Doxygen REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(nav2_map_server REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sar REQUIRED) # add sar
 
 ############################################
@@ -90,21 +94,15 @@ doxygen_add_docs(docs           # target name
   )
 
 # Add executables:
-add_executable(cam_sub
-  src/camera_subscriber.cpp)
 add_executable(goal_pub
   src/goal_publisher.cpp)
 
 # Add executable dependencis:
-ament_target_dependencies(cam_sub
-  rclcpp std_msgs rclcpp sensor_msgs cv_bridge image_transport)
-target_link_libraries(cam_sub 
-  sar)
-
 ament_target_dependencies(goal_pub
-  rclcpp std_msgs)
+  rclcpp std_msgs nav2_msgs rclcpp_action nav2_map_server cv_bridge sensor_msgs)
 target_link_libraries(goal_pub
   sar)
+
 
 ###################################
 # Installation
@@ -112,15 +110,21 @@ target_link_libraries(goal_pub
 
 # Install executables:
 install(TARGETS
-  cam_sub
   goal_pub
   DESTINATION lib/${PROJECT_NAME})
 
 # install launch files
 install(DIRECTORY
   launch
+  model
+  urdf
+  map
+  worlds
+  param
+  rviz
   DESTINATION share/${PROJECT_NAME}
 )
+
 
 ## Install some arbitrary executables
 install(PROGRAMS      # want to make the file executable (ie. chmod a+x)

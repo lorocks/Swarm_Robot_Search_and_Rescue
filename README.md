@@ -40,6 +40,7 @@ The project will take two weeks to complete over two iterations, consisting of P
 # Links
 ## Video Links
 [Final Project Phase 1](https://youtu.be/q-IzEfy1U-s)
+[Final Project Phase 2, Implementation Run](https://youtu.be/q_XyEkmD19g)
 
 ## AIP Document Links
 [AIP Google Sheet](https://docs.google.com/spreadsheets/d/1iOmKEHb6u9iLjWMfp7kFqTMgQoor1WnGJIepN5Y3yEI/edit#gid=0)
@@ -52,7 +53,7 @@ Algorithms that employ HSV manipulation of images using OpenCV will used for obj
 
 # Development
 ## Packages
- - sar: A C++ API used for navigation and object detection with robotd
+ - sar: A C++ API used for navigation and object detection with robots
  - multi_robot: A package created to use the sar API for Search & Rescue operations and Swarm implementation
 
 ## Phase 1
@@ -68,6 +69,78 @@ For Phase 1, the initial design of UML diagrams and empty implementation with cl
  - Level 1: Tests for the C++ API, to check functionality of every class method was created
  - Level 2 (Incomplete): Placeholder test for publishing is created
 
+## Phase 2
+For Phase 2, the actual implementation of the C++ API and the ROS2 node working with the API is completed.
+
+### Changelogs
+ - CameraSubscriber node deleted
+ - GoalPublisher renamed to GoalGenerator
+ - UML Diagrams edited and API changes based on UML diagram
+
+### Features
+search library
+ - YOLOv5 object detection
+ - Used to stop navigation after object detected
+
+goals library
+ - Generate a random goal within input bounds (height, width)
+ - Works without path planning
+
+ROS2 Node: GoalGenerator
+ - Uses search and goals library
+ - Publishes goals ascynchronously to Nav2 topic using ActionClient
+ - Performs object detection simultaeneously by subscribing to camera topic
+ - Work with namespaces
+ - Requires compulsory parameter for namespace
+ - Running node as single instance will not work since it depends on Nav2 AMCL server
+
+YOLOv5 ONNX
+ - Contains YOLOv5 model and coconames file in /src/multi_robot/models
+
+URDF & SDF
+ - Turtlebot URDF & SDF edited to support namespaces
+
+Nav2
+ - Added Nav2 launch files and edited to support multi-robot namespaces
+
+RViz
+ - Custom RViz file for Nav2 visualization
+
+Launch file
+ - Launches as dependencies as a single command
+ - Default launches 2 robots, robot number can be changed by user input
+ - User required to provide robot spawn location. Spawn points can be hardcodded or passed using a .txt file
+ - User required to provide map file for Nav2 localization
+    
+Unit Tests
+ - USed during initial implementation
+ - Don't work as intended in final implementation because of addition of compulsory namespace requirement. Namespace is assigned dynamically and node run requires compulsory parameter.
+ - Proper unit tests for node can't be written because of Nav2 AMCL and map server running requirements (Computationaly heavy and takes time to launch)
+
+### Run Node
+```bash
+# Run goal_pub node
+  ros2 run multi_robot goal_pub < namespace >
+
+# Example run
+  ros2 run multi_robot goal_pub tb1
+```
+
+## Launch
+```bash
+# Launch the main implementation
+  ros2 launch multi_robot multi_robot_main.launch.py num:=< add robot num > # If no num:= default robot spawn 2
+
+# Launch with params
+  ros2 launch multi_robot multi_robot_main.launch.py num:=< add robot num > < param name >:=< param value >
+
+# View params
+  ros2 param list
+```
+
+# Future Works
+ - Path planning approach for exploration instead of random goal generation
+ - Dynamic robot spawn locations
 
 # Build Commands
 ## How to generate package dependency graph
@@ -80,7 +153,6 @@ open depGraph.png
     width="20%" 
     style="display: block; margin: 0 auto"
     />](screenshots/depGraph.png)
-
 
 
 ## How to build
@@ -144,3 +216,7 @@ open build/sar/test_coverage/index.html
 ./do-docs.bash
 ```
 
+
+
+
+Talk abt dynamic robot spawn position, or predefined fom file or in code

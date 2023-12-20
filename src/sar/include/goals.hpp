@@ -35,53 +35,39 @@
  * @brief Structure representing a goal position with x and y coordinates.
  */
 struct GoalPosition {
-  double x; /**< X-coordinate of the goal position. */
-  double y; /**< Y-coordinate of the goal position. */
+    double x; /**< X-coordinate of the goal position. */
+    double y; /**< Y-coordinate of the goal position. */
 };
 
 /**
- * @brief Class for generating and managing goals based on a map image.
+ * @brief Class for generating random goals within the map boundaries.
  */
 class GoalGenerator {
- public:
-  /**
-   * @brief Constructor for GoalGenerator class.
-   */
-  GoalGenerator();
+public:
+    /**
+     * @brief Constructor for GoalGenerator class.
+     */
+    GoalGenerator(int mapWidth, int mapHeight);
 
-  /**
-   * @brief Destructor for GoalGenerator class.
-   */
-  ~GoalGenerator();
+    /**
+     * @brief Generates a random goal position within the map boundaries.
+     *
+     * @return A GoalPosition representing the randomly generated goal position.
+     */
+    GoalPosition generateRandomGoal();
 
-  /**
-   * @brief Generates goal positions based on the provided map image.
-   *
-   * This function analyzes the map image and generates goal positions.
-   *
-   * @param mapImage The input map image.
-   * @return A vector of GoalPosition representing the generated goal positions.
-   */
-  std::vector<GoalPosition> generateGoals(const cv::Mat& mapImage);
+private:
+    /**
+     * @brief Paramter to hold the width of the map
+     * 
+     */
+    int mapWidth_;
 
-  /**
-   * @brief Updates the goal for a specific robot once it reaches its current
-   * goal.
-   *
-   * This function is called when a robot reaches its current goal, and it
-   * updates the goal for that specific robot.
-   *
-   * @param robotID The identifier of the robot for which the goal needs to be
-   * updated.
-   * @return The updated GoalPosition for the specified robot.
-   */
-  GoalPosition updateGoal(int robotID);
-
- private:
-  /**
-   * @brief Private member variable to store the generated goal positions.
-   */
-  std::vector<GoalPosition> goalPositions;
+    /**
+     * @brief Paramter to hold the height of the map
+     * 
+     */
+    int mapHeight_;
 };
 
 #endif  // GOALS_HPP

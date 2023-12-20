@@ -16,14 +16,18 @@ The API consistes of two libraries
 - search: A object detection library used to check for pre-defined objects in the scene.
 
 ### Library - goals
-It consists of two main method,
-- generateGoals(): is used to generate positions for the robot to navigate toward
-- updateGoal(): is used to set the current target location which is robot is moving towards
+It consists of the main method,
+- generateRandomGoal(): is used to generate random positions for the robot to navigate toward
+
+Library can be added using by including "goals.hpp"
+
 
 ### Library - search
 It consists of two main method,
 - runObjectDetection(): is used to pass the scene image for object detection and return the outputs from analysis
 - isObjectFound(): is used to set a global value for whether an object is found or not and by which robot
+
+Library can be added using by including "search.hpp"
 
 ## Standard install via command-line
 ```bash

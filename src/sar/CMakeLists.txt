@@ -24,7 +24,9 @@ execute_process(COMMAND cmake -E create_symlink
 find_package(OpenCV REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Doxygen REQUIRED)
-
+find_package(rclcpp REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 
 ############################################

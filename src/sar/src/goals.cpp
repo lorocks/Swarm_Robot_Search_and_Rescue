@@ -27,74 +27,41 @@
 
 #include "goals.hpp"
 
-/**
- * @brief Constructor for GoalGenerator class.
- *
- * Initializes an instance of the GoalGenerator class.
- * Add any necessary initialization code within this function.
- */
-GoalGenerator::GoalGenerator() {
-  // Add any necessary initialization code
-}
+#include <random>
 
 /**
- * @brief Destructor for GoalGenerator class.
+ * @brief Construct a new Goal Generator:: Goal Generator object
  *
- * Cleans up resources and performs necessary actions before destroying
- * an instance of the GoalGenerator class.
+ * Instantiates a object of GoalGenerator Class and set the class parameters
+ *
+ * @param mapWidth The width of the map
+ * @param mapHeight The height of the map
  */
-GoalGenerator::~GoalGenerator() {
-  // Add destructor
-}
+GoalGenerator::GoalGenerator(int mapWidth, int mapHeight)
+    : mapWidth_(mapWidth), mapHeight_(mapHeight) {}
 
 /**
- * @brief Generates goal positions based on the provided map image.
+ * @brief Generates random goal positions for navigation and traversal
  *
- * This function analyzes the given map image and implements a multi-agent
- * algorithm to generate goal positions for the robots. The generated goal
- * positions are stored in the goalPositions vector.
+ * Uses the std methods for generating uniformly distributed random number
+ * between the range of the map's width and height
  *
- * @param mapImage The input map image.
- * @return A vector of GoalPosition representing the generated goal positions.
+ * @return GoalPosition struct return type
  */
-std::vector<GoalPosition> GoalGenerator::generateGoals(
-    const cv::Mat& mapImage) {
-  // Implement the multi-agent algorithm to generate goal positions based on the
-  // map Update the goalPositions vector accordingly
-  GoalPosition testGoal;
+GoalPosition GoalGenerator::generateRandomGoal() {
+  // Define a object of struct for returning value
+  GoalPosition goal;
 
-  // Placeholder logic
-  testGoal.x = 1;
-  testGoal.y = 1;
+  // Use a random number generator to generate random x and y coordinates within
+  // the map
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> x_dist(0.0, static_cast<double>(mapWidth_));
+  std::uniform_real_distribution<> y_dist(0.0, static_cast<double>(mapHeight_));
 
-  goalPositions.emplace_back(testGoal);
+  // Update (x, y) values for return
+  goal.x = x_dist(gen);
+  goal.y = y_dist(gen);
 
-  // Implement your algorithm to generate goal positions based on the map
-  return goalPositions;
-}
-
-/**
- * @brief Updates the goal for a specific robot once it reaches its current
- * goal.
- *
- * This function is called when a robot reaches its current goal, and it updates
- * the goal for that specific robot based on its current goal and any other
- * relevant information.
- *
- * @param robotID The identifier of the robot for which the goal needs to be
- * updated.
- * @return The updated GoalPosition for the specified robot.
- */
-GoalPosition GoalGenerator::updateGoal(int robotID) {
-  // Implement logic to update the goal for a specific robot
-  // based on its current goal and any other relevant information
-  // Return the updated goal position
-
-  // Placeholder logic
-  GoalPosition updatedGoal;
-
-  updatedGoal.x = 1;
-  updatedGoal.y = 1;
-
-  return updatedGoal;
+  return goal;
 }

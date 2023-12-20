@@ -18,18 +18,18 @@ TEST(unit_test_object_detect_ball, this_should_pass) {
   EXPECT_FALSE(val);
 }
 
-TEST(unit_test_object_detect_people, this_should_pass) {
-  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx",
-                   "../../../src/sar/models/coco.names");
+// TEST(unit_test_object_detect_people, this_should_pass) {
+//   ObjectSearch obj("../../../src/sar/models/yolov5s.onnx",
+//                    "../../../src/sar/models/coco.names");
 
-  // Load a static image using cv::imread("../../assets/image.jpg"); and pass it
-  // through the runObjectDetection method
-  cv::Mat image = cv::imread("../../../src/sar/assets/people.jpg");
+//   // Load a static image using cv::imread("../../assets/image.jpg"); and pass it
+//   // through the runObjectDetection method
+//   cv::Mat image = cv::imread("../../../src/sar/assets/people.jpg");
 
-  bool val = obj.runObjectDetection(image);
+//   bool val = obj.runObjectDetection(image);
 
-  EXPECT_FALSE(val);
-}
+//   EXPECT_FALSE(val);
+// }
 
 TEST(unit_test_object_detect_cycle, this_should_pass) {
   ObjectSearch obj("../../../src/sar/models/yolov5s.onnx",

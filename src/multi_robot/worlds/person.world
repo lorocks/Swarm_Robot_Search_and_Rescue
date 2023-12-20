@@ -72,7 +72,7 @@
     </scene>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>-0.085663 -0.278544 11.8757 0 1.5138 0.009599</pose>
+        <pose>0.319586 -0.227922 9.29441 0 1.5138 0.009599</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -726,21 +726,21 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>1.60298 0.404494 0 0 -0 0</pose>
+      <pose>2.03156 1.26 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>51 942000000</sim_time>
-      <real_time>52 930043439</real_time>
-      <wall_time>1703029459 467143275</wall_time>
-      <iterations>51942</iterations>
+      <sim_time>89 598000000</sim_time>
+      <real_time>90 627291098</real_time>
+      <wall_time>1703031292 489266963</wall_time>
+      <iterations>89598</iterations>
       <model name='bowl'>
-        <pose>1.60298 0.404494 -5e-06 -5.1e-05 -5.1e-05 0</pose>
+        <pose>2.03156 1.26 -4e-06 4.2e-05 4.2e-05 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>1.60298 0.404494 -5e-06 -5.1e-05 -5.1e-05 0</pose>
-          <velocity>-0 0 -0.000499 -0.096848 -0.096848 -0</velocity>
-          <acceleration>-3.13078 3.13078 0.455349 0.210669 -0.21067 -3.14159</acceleration>
-          <wrench>-0.313078 0.313078 0.045535 0 -0 0</wrench>
+          <pose>2.03156 1.26 -4e-06 4.2e-05 4.2e-05 0</pose>
+          <velocity>0 -0 0.00082 0.092837 0.092837 0</velocity>
+          <acceleration>3.33966 -3.33966 1.1392 -0.851902 0.851903 3.14159</acceleration>
+          <wrench>0.333966 -0.333966 0.11392 0 -0 0</wrench>
         </link>
       </model>
       <model name='ground_plane'>

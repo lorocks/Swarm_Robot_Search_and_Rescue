@@ -64,8 +64,8 @@ jobs:
           sudo apt update
           sudo apt install -y software-properties-common
           sudo apt install -y doxygen lcov gcovr
-          sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
-          sudo apt install ros-humble-turtlebot3*
+          sudo apt install -y ros-humble-navigation2 ros-humble-nav2-bringup
+          sudo apt install -y ros-humble-turtlebot3*
 
       - name: Install OpenCV
         run: |

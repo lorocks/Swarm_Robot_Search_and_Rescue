@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>multi_robot</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="tchang@ideapad3.com">tchang</maintainer>
-  <license>TODO: License declaration</license>
+  <version>1.0.0</version>
+  <description>ROS Swarm Robotics for Search and Rescue</description>
+  <maintainer email="lorocks@umd.edu">lorocks</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>

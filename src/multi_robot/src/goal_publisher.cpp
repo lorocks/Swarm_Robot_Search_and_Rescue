@@ -1,3 +1,29 @@
+/**
+ * @file goal_publisher.cpp
+ * @author Lowell Lobo
+ * @author Mayank Deshpande
+ * @brief ROS2 Implementation using Search and Rescue API
+ * @version 0.1
+ * @date 2023-12-08
+ *
+ * @copyright Copyright © 2023 <copyright holders>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions: The above copyright
+ * notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED “AS IS”,
+ * WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *
+ */
 #include <chrono>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
@@ -8,9 +34,19 @@
 #include "goals.hpp"
 #include "search.hpp"
 
+/**
+ * @brief ROS2 Class inheriting from rclcpp Node to implment a node that uses the SaR API 
+ * for Swarm Robotics
+ * 
+ */
 class NavigateToPoseNode : public rclcpp::Node
 {
 public:
+    /**
+    * @brief Construct a new Navigate To Pose Node object
+    * 
+    * @param robot_namespace 
+    */
     NavigateToPoseNode(const std::string& robot_namespace)
         : Node("navigate_to_pose_client_" + robot_namespace), present_goal(0), robot_namespace_(robot_namespace),
           find("src/multi_robot/models/yolov5s.onnx", "src/multi_robot/models/coco.names")
@@ -18,6 +54,7 @@ public:
         // Create an ActionClient for the NavigateToPose action
         goal_send = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "/" + robot_namespace + "/navigate_to_pose");
 
+        // Create a subscriber to read camera streaming data
         image_subscriber_ = create_subscription<sensor_msgs::msg::Image>(
             "/" + robot_namespace + "/camera/image_raw",
             10,
@@ -59,6 +96,10 @@ public:
     }
 
 private:
+    /**
+     * @brief Method to push goal generated into the Nav2 stack for autonomous navigation
+     * 
+     */
     void sendNextGoal()
     {
         if (present_goal < goals_list.size())
@@ -87,6 +128,13 @@ private:
         }
     }
 
+    /**
+     * @brief Async callback for the nav2 action of posting goal position
+     * 
+     * Returns response about navigation based on current goal sent
+     * 
+     * @param result Parameter to check callback and action status
+     */
     void result_callback(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult &result)
     {
         switch (result.code)
@@ -113,6 +161,11 @@ private:
         }
     }
 
+    /**
+     * @brief Callback to call object detection for the camera topic subscriber
+     * 
+     * @param msg Parameter holding the image data
+     */
     void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg)
     {
         // Convert the ROS image from the robots to the OpenCV image
@@ -136,6 +189,11 @@ private:
         }
     }
 
+    /**
+     * @brief Method 1 to generate a list of goals by storing values into a vector
+     * 
+     * @return std::vector<GoalPosition> : return vector with goal positions
+     */
     std::vector<GoalPosition> generateGoalListRobot1()
     {
         // Create a list of GoalPositions with random values for robot 1
@@ -148,6 +206,11 @@ private:
         return goals;
     }
 
+    /**
+     * @brief Method 2 to generate a list of goals by storing values into a vector
+     * 
+     * @return std::vector<GoalPosition> : return vector with goal positions
+     */
     std::vector<GoalPosition> generateGoalListRobot2()
     {
         // Create a list of GoalPositions with random values for robot 2
@@ -160,12 +223,46 @@ private:
         return goals;
     }
 
+    /**
+     * @brief vector of struct GoalPostion to hold a list of goal values for navigation
+     * 
+     */
     std::vector<GoalPosition> goals_list;
+
+    /**
+     * @brief Counter for current goal iteration
+     * 
+     */
     size_t present_goal;
+
+    /**
+     * @brief Parameter to set the namespace for the node
+     * 
+     */
     std::string robot_namespace_;
+
+    /**
+     * @brief rclcpp action object for sending goal position to Nav2
+     * 
+     */
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr goal_send;
+
+    /**
+     * @brief rclcpp action object for handling the client action asynchronously
+     * 
+     */
     rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr future_goal_handle;
+
+    /**
+     * @brief Object for subscribing to camera topic to get video streaming information
+     * 
+     */
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscriber_;
+
+    /**
+     * @brief Object of class ObjectSearch used for object detection
+     * 
+     */
     ObjectSearch find;
 };
 

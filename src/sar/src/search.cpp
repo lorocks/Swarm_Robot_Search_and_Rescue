@@ -76,7 +76,7 @@ ObjectSearch::~ObjectSearch() {
  */
 bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   // Convert the frame to a blob suitable for input to the model
-  cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(640, 640),
+  cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0/255.0, cv::Size(640.0, 640.0),
                                         cv::Scalar(), true, false);
 
   // Set the input blob for the model
@@ -92,13 +92,14 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
 
   for (int i = 0; i < 25200; ++i) {
     float confidence = data[4];
-    if (confidence > 0.5) {
-      float* classes_scores = data + 5;
-      cv::Mat scores(1, classNames.size(), CV_32FC1, classes_scores);
+    if (confidence > 0.35) {
+      float class_score = data[5];
+      // float* classes_scores = data + 5;
+      cv::Mat scores(1, classNames.size(), CV_32FC1, class_score);
       cv::Point class_id;
       double max_score;
       cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
-      if (class_id.x == 1) {
+      if (class_id.x == 1 || class_id.x == 2 || class_id.x == 46 ) {
         objectFound = true;
 
         return true;

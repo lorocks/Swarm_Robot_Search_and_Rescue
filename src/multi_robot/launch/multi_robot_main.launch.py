@@ -44,10 +44,10 @@ def generate_launch_description():
     print(f'[INFO] [launch]: Launching {robot_num} robots')
 
     robot_locations = [
-        {'x_pose': '-1.5', 'y_pose': '-0.3', 'z_pose': 0.01},
-        {'x_pose': '-1.5', 'y_pose': '0.3', 'z_pose': 0.01},
-        {'x_pose': '-1.5', 'y_pose': '0.6', 'z_pose': 0.01},
-        {'x_pose': '-1.5', 'y_pose': '-0.6', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '-0.4', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '0.4', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '0.9', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '-0.9', 'z_pose': 0.01},
         {'x_pose': '-1.5', 'y_pose': '0.0', 'z_pose': 0.01},
         {'x_pose': '-2.1', 'y_pose': '0.0', 'z_pose': 0.01},
         ]

@@ -37,22 +37,11 @@ TEST(unit_test_check_object_found, this_should_pass) {
   EXPECT_FALSE(val);
 }
 
-// TEST(unit_test_generate_goals, this_should_pass) {
-//   GoalGenerator obj;
+TEST(unit_test_generate_goals, this_should_pass) {
+  GoalGenerator obj(1, 1);
 
-//   cv::Mat mapImage;
+  auto positions = obj.generateRandomGoal();
 
-//   auto positions = obj.generateGoals(mapImage);
+  EXPECT_GT((positions.x*positions.x) + (positions.y*positions.y), 0);
+}
 
-//   EXPECT_GT(positions.size(), 0);
-// }
-
-// TEST(unit_test_goal_update, this_should_pass) {
-//   GoalGenerator obj;
-
-//   auto goal = obj.updateGoal(0);
-
-//   auto goalVector = sqrt((goal.x * goal.x) + (goal.y * goal.y));
-
-//   EXPECT_GT(goalVector, 0);
-// }

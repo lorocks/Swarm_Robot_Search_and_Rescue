@@ -22,7 +22,7 @@ class TaskPlanningFixture : public testing::Test {
      * 1.) Define any ros2 package and exectuable you want to test
      *  example: package name = cpp_pubsub, node name = minimal_publisher, executable = talker
      */
-    bool retVal = StartROSExec ("multi_robot", "minimal_publisher", "goal_pub");
+    bool retVal = StartROSExec ("multi_robot", "navigate_to_pose_client_tb1", "goal_pub");
     ASSERT_TRUE(retVal);
 
     RCLCPP_INFO_STREAM(node_->get_logger(), "DONE WITH SETUP!!");
@@ -48,7 +48,7 @@ class TaskPlanningFixture : public testing::Test {
                      const char* exec_name)
   {
     // build command strings
-    cmd_ss << "ros2 run " << pkg_name << " " << exec_name << " > /dev/null 2> /dev/null &";
+    cmd_ss << "ros2 run " << pkg_name << " " << exec_name << " tb1" << " > /dev/null 2> /dev/null &";
     cmdInfo_ss << "ros2 node info " << "/" << node_name << " > /dev/null 2> /dev/null";
     char execName[16];  snprintf (execName, 16, "%s", exec_name); // pkill uses exec name <= 15 char only
     killCmd_ss << "pkill --signal SIGINT " << execName << " > /dev/null 2> /dev/null";
@@ -95,7 +95,7 @@ TEST_F(TaskPlanningFixture, TrueIsTrueTest) {
   using SUBSCRIBER = rclcpp::Subscription<String>::SharedPtr;
   bool hasData = false;
   SUBSCRIBER subscription = node_->create_subscription<String>
-    ("topic", 10,
+    ("pub_goals", 10,
      // Lambda expression begins
      [&](const std_msgs::msg::String& msg) {
        RCLCPP_INFO(node_->get_logger(), "I heard: '%s'", msg.data.c_str());

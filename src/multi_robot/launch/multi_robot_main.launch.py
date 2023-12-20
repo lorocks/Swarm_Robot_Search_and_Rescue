@@ -33,8 +33,7 @@ from launch.conditions import IfCondition
 import sys
 
 def generate_launch_description():
-    ld = LaunchDescription()
-
+    # User input spawning
     robot_num = -1
     for i in sys.argv:
         if i.find('num:=') > -1:
@@ -45,12 +44,12 @@ def generate_launch_description():
     print(f'[INFO] [launch]: Launching {robot_num} robots')
 
     robot_locations = [
-        {'x_pose': '-1.25', 'y_pose': '-0.3', 'z_pose': 0.01},
-        {'x_pose': '-1.25', 'y_pose': '0.3', 'z_pose': 0.01},
-        {'x_pose': '-1.25', 'y_pose': '0.6', 'z_pose': 0.01},
-        {'x_pose': '-1.25', 'y_pose': '-0.6', 'z_pose': 0.01},
-        {'x_pose': '-1.25', 'y_pose': '0.0', 'z_pose': 0.01},
-        {'x_pose': '-2', 'y_pose': '0.0', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '-0.3', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '0.3', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '0.6', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '-0.6', 'z_pose': 0.01},
+        {'x_pose': '-1.5', 'y_pose': '0.0', 'z_pose': 0.01},
+        {'x_pose': '-2.1', 'y_pose': '0.0', 'z_pose': 0.01},
         ]
     
     # Forcing robot spawn to lower number, because of small map in current implementation
@@ -64,30 +63,35 @@ def generate_launch_description():
         location['name'] = f'tb{i+1}'
         robots.append(location)
     
-    print(robots)
+
+    ld = LaunchDescription()
+
+    package_dir = get_package_share_directory('multi_robot')
+    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    urdf = os.path.join(
+        package_dir, 'urdf', 'turtlebot3_waffle.urdf'
+    )
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
     use_rviz = LaunchConfiguration('use_rviz', default='true')
-    declare_enable_rviz = DeclareLaunchArgument(
-        name='enable_rviz', default_value=use_rviz, description='Enable rviz launch'
+    use_rviz_arg = DeclareLaunchArgument(
+        name='use_rviz', default_value=use_rviz, description='Enable rviz launch'
     )
-
-    
-    package_dir = get_package_share_directory('multi_robot')
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-
 
     rviz_config_file = LaunchConfiguration('rviz_config_file')
-    declare_rviz_config_file_cmd = DeclareLaunchArgument(
+    rviz_config_file_arg = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(
-            package_dir, 'rviz', 'multi_nav2_default_view.rviz'),
+        default_value=os.path.join(package_dir, 'rviz', 'multi_nav2_default_view.rviz'),
         description='Full path to the RVIZ config file to use')
 
-    urdf = os.path.join(
-        package_dir, 'urdf', 'turtlebot3_waffle.urdf'
-    )
+    params_file = LaunchConfiguration('params_file')
+    params_file_arg = DeclareLaunchArgument(
+        'params_file',
+        default_value=os.path.join(package_dir, 'param', 'nav2_params.yaml'),
+        description='Full path to the ROS2 parameters file to use for all launched nodes')
+   
+    
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -99,18 +103,6 @@ def generate_launch_description():
           }.items()
     )
 
-    params_file = LaunchConfiguration('nav_params_file')
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'nav_params_file',
-        default_value=os.path.join(package_dir, 'param', 'nav2_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
-    
-     
-    ld.add_action(declare_enable_rviz)
-    ld.add_action(declare_rviz_config_file_cmd)
-    ld.add_action(declare_params_file_cmd)
-    ld.add_action(gazebo)
- 
     map_server=Node(package='nav2_map_server',
         executable='map_server',
         name='map_server',
@@ -129,6 +121,11 @@ def generate_launch_description():
                         {'node_names': ['map_server']}])
 
 
+
+    ld.add_action(use_rviz_arg)
+    ld.add_action(rviz_config_file_arg)
+    ld.add_action(params_file_arg)
+    ld.add_action(gazebo)
     ld.add_action(map_server)
     ld.add_action(map_server_lifecyle)
 
@@ -203,14 +200,11 @@ def generate_launch_description():
 
         namespace = [ '/' + robot['name'] ]
 
-        # Create a initial pose topic publish call
-        message = '{header: {frame_id: map}, pose: {pose: {position: {x: ' + \
-            robot['x_pose'] + ', y: ' + robot['y_pose'] + \
-            ', z: 0.1}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0000000}}, }}'
-
         initial_pose_cmd = ExecuteProcess(
             cmd=['ros2', 'topic', 'pub', '-t', '3', '--qos-reliability', 'reliable', namespace + ['/initialpose'],
-                'geometry_msgs/PoseWithCovarianceStamped', message],
+                'geometry_msgs/PoseWithCovarianceStamped', '{header: {frame_id: map}, pose: {pose: {position: {x: ' + \
+            robot['x_pose'] + ', y: ' + robot['y_pose'] + \
+            ', z: 0.1}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0000000}}, }}'],
             output='screen'
         )
 

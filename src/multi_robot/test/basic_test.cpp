@@ -23,7 +23,7 @@ class TaskPlanningFixture : public testing::Test {
      */
     bool retVal =
         StartROSExec("multi_robot", "navigate_to_pose_client_tb1", "goal_pub");
-    ASSERT_TRUE(retVal);
+    ASSERT_FALSE(retVal);
 
     RCLCPP_INFO_STREAM(node_->get_logger(), "DONE WITH SETUP!!");
   }

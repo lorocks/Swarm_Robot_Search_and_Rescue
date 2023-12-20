@@ -92,6 +92,10 @@ class ObjectSearch {
    */
   cv::dnn::Net humanDetectionModel;
 
+  /**
+   * @brief Vector to hold all the coco class names for object detection
+   * 
+   */
   std::vector<std::string> classNames;
 
 };

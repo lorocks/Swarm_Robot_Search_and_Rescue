@@ -57,7 +57,16 @@ public:
     GoalPosition generateRandomGoal();
 
 private:
+    /**
+     * @brief Paramter to hold the width of the map
+     * 
+     */
     int mapWidth_;
+
+    /**
+     * @brief Paramter to hold the height of the map
+     * 
+     */
     int mapHeight_;
 };
 

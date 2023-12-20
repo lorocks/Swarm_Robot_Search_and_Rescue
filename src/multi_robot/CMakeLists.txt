@@ -94,17 +94,10 @@ doxygen_add_docs(docs           # target name
   )
 
 # Add executables:
-add_executable(cam_sub
-  src/camera_subscriber.cpp)
 add_executable(goal_pub
   src/goal_publisher.cpp)
 
 # Add executable dependencis:
-ament_target_dependencies(cam_sub
-  rclcpp std_msgs rclcpp sensor_msgs cv_bridge image_transport)
-target_link_libraries(cam_sub 
-  sar)
-
 ament_target_dependencies(goal_pub
   rclcpp std_msgs nav2_msgs rclcpp_action nav2_map_server cv_bridge sensor_msgs)
 target_link_libraries(goal_pub
@@ -117,7 +110,6 @@ target_link_libraries(goal_pub
 
 # Install executables:
 install(TARGETS
-  cam_sub
   goal_pub
   DESTINATION lib/${PROJECT_NAME})
 

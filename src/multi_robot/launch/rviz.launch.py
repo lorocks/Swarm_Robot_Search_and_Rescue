@@ -28,6 +28,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
+import sys
 
 ld = LaunchDescription()
 
@@ -83,6 +84,7 @@ def generate_launch_description():
     x_pose = LaunchConfiguration('x_pose', default='-2.0')
     y_pose_arg = DeclareLaunchArgument('y_pose', default_value='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
+
 
     # function = OpaqueFunction(function=launch, args=[LaunchConfiguration('x_pose'), LaunchConfiguration('y_pose'), LaunchConfiguration('namespace'), LaunchConfiguration('use_rviz')])
 

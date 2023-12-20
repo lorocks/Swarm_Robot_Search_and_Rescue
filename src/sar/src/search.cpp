@@ -99,7 +99,7 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
       cv::Point class_id;
       double max_score;
       cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
-      if (class_id.x == 1 || class_id.x == 2 || class_id.x == 46 ) {
+      if (class_id.x == 0 || class_id.x == 0 || class_id.x == 45 ) {
         objectFound = true;
 
         return true;

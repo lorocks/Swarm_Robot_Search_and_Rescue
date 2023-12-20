@@ -26,6 +26,7 @@
  */
 
 #include "search.hpp"
+#include <opencv2/core.hpp>
 
 /**
  * @brief Constructor for the ObjectSearch class.
@@ -89,10 +90,17 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
 
     for (int i = 0; i < 25200; ++i){
       float confidence = data[4];
-      if (confidence > 0.01){
-        objectFound = true;
+      if (confidence > 0.5){
+        float * classes_scores = data + 5;
+        cv::Mat scores(1, 80, CV_32FC1, classes_scores);
+        cv::Point class_id;
+        double max_score;
+        cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
+        if ((class_id.x == 'person') || (class_id.x == 'ball')){
+          objectFound = true;
 
-        return true;
+          return true;
+        }
       }
     }
 

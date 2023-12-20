@@ -9,3 +9,6 @@ A ROS2 package that implements the Search & Rescue (SaR) API for performing Swar
  
 # Updates 
 Functionality is still being built
+
+
+Talk abt dynamic robot spawn position, or predefined fom file or in code

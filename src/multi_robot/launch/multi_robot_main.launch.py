@@ -26,22 +26,45 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.substitutions import PathJoinSubstitution, FindExecutable
+from launch.substitutions import PathJoinSubstitution
 from launch.event_handlers import OnProcessExit
 from launch.conditions import IfCondition
-import launch.logging
+
+import sys
 
 def generate_launch_description():
     ld = LaunchDescription()
 
-    robots = [
-        {'name': 'tb1', 'x_pose': '-1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
-        {'name': 'tb2', 'x_pose': '-1.5', 'y_pose': '0.5', 'z_pose': 0.01},
-        # {'name': 'tb3', 'x_pose': '-1.5', 'y_pose': '0.0', 'z_pose': 0.01},
-        # {'name': 'tb4', 'x_pose': '-1.0', 'y_pose': '0.5', 'z_pose': 0.01},
-        # ...
-        # ...
+    robot_num = -1
+    for i in sys.argv:
+        if i.find('num:=') > -1:
+            robot_num = int(i[i.find('=') + 1:])
+    if robot_num == -1:
+        robot_num = 2
+
+    print(f'[INFO] [launch]: Launching {robot_num} robots')
+
+    robot_locations = [
+        {'x_pose': '-1.25', 'y_pose': '-0.3', 'z_pose': 0.01},
+        {'x_pose': '-1.25', 'y_pose': '0.3', 'z_pose': 0.01},
+        {'x_pose': '-1.25', 'y_pose': '0.6', 'z_pose': 0.01},
+        {'x_pose': '-1.25', 'y_pose': '-0.6', 'z_pose': 0.01},
+        {'x_pose': '-1.25', 'y_pose': '0.0', 'z_pose': 0.01},
+        {'x_pose': '-2', 'y_pose': '0.0', 'z_pose': 0.01},
         ]
+    
+    # Forcing robot spawn to lower number, because of small map in current implementation
+    if robot_num > 6:
+        robot_num = 6
+        print('[INFO] [launch]: Forcing {robot_num} robots to spawn due to small map')
+
+    robots = []
+    for i in range(robot_num):
+        location = robot_locations[i]
+        location['name'] = f'tb{i+1}'
+        robots.append(location)
+    
+    print(robots)
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 

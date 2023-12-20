@@ -100,11 +100,12 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
       cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
       
       // Check if the detected object is a "bowl" 
-      if (class_id.x == 45) {
+      if (max_score > 0.5 && class_id.x == 0) {
         objectFound = true;
         return true;
       }
     }
+    data += 85;
   }
 
   // If no bowl is found in the frame, set objectFound to false

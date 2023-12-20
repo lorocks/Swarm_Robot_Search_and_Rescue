@@ -48,7 +48,7 @@ class ObjectSearch {
    * and configuration paths.
    *
    * @param modelPath The path to the pre-trained object detection model.
-   * @param configPath The path to the configuration file for the model.
+   * @param yolo_names The path to the YOLO class names file.
    */
   ObjectSearch(const std::string& modelPath, const std::string& yolo_names);
 
@@ -93,11 +93,11 @@ class ObjectSearch {
   cv::dnn::Net humanDetectionModel;
 
   /**
-   * @brief Vector to hold all the coco class names for object detection
-   * 
+   * @brief Vector to hold all the coco class names for object detection.
    */
   std::vector<std::string> classNames;
 
 };
 
 #endif  // SEARCH_HPP
+

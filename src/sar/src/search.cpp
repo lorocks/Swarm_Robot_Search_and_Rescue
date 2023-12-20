@@ -36,7 +36,7 @@
  * and configuration paths.
  *
  * @param modelPath The path to the pre-trained object detection model.
- * @param configPath The path to the configuration file for the model.
+ * @param yolo_names The path to the YOLO class names file.
  */
 ObjectSearch::ObjectSearch(const std::string& modelPath,
                            const std::string& yolo_names)
@@ -75,6 +75,7 @@ ObjectSearch::~ObjectSearch() {
  * @return True if object detection is successful, false otherwise.
  */
 bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
+
   // Convert the frame to a blob suitable for input to the model
   cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(640, 640),
                                         cv::Scalar(), true, false);
@@ -85,8 +86,7 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   std::vector<cv::Mat> outputs;
 
   // Forward pass the blob through the model
-  humanDetectionModel.forward(
-      outputs, humanDetectionModel.getUnconnectedOutLayersNames());
+  humanDetectionModel.forward(outputs, humanDetectionModel.getUnconnectedOutLayersNames());
 
   float* data = reinterpret_cast<float*>(outputs[0].data);
 
@@ -98,45 +98,16 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
       cv::Point class_id;
       double max_score;
       cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
-      if (class_id.x == 1) {
+      
+      // Check if the detected object is a "bowl" 
+      if (class_id.x == 45) {
         objectFound = true;
-
         return true;
       }
     }
   }
 
-  // // Process the detection results and update the objectFound variable
-  // accordingly for (int i = 0; i < detectionMat.rows; ++i) {
-  //     float confidence = detectionMat.at<float>(i, 2);
-
-  //     // Extract class index from detection
-  //     int classId = static_cast<int>(detectionMat.at<float>(i, 1));
-
-  //     // Check if the detected class is a person
-  //     if ((classNames[classId] == "person" || classNames[classId] == "ball")
-  //     && confidence > 0.5) {
-  //         objectFound = true;
-
-  //         // // Extract bounding box coordinates
-  //         // int x = static_cast<int>(frame.cols * detectionMat.at<float>(i,
-  //         3));
-  //         // int y = static_cast<int>(frame.rows * detectionMat.at<float>(i,
-  //         4));
-  //         // int width = static_cast<int>(frame.cols *
-  //         (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
-  //         // int height = static_cast<int>(frame.rows *
-  //         (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
-
-  //         // // Draw bounding box
-  //         // cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y +
-  //         height), cv::Scalar(0, 255, 0), 2);
-
-  //         return true;
-  //     }
-  // }
-
-  // If no person is found in the frame, set objectFound to false
+  // If no bowl is found in the frame, set objectFound to false
   objectFound = false;
   return false;
 }
@@ -149,4 +120,11 @@ bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
  *
  * @return True if the object is found, false otherwise.
  */
-bool ObjectSearch::isObjectFound() const { return objectFound; }
+bool ObjectSearch::isObjectFound() const {
+  // Check if the class label for a "bowl" is present in the classNames vector
+  auto it = std::find(classNames.begin(), classNames.end(), "bowl");
+  
+  // If the class label for a "bowl" is found and the object is found in the frames, return true
+  return (it != classNames.end() && objectFound);
+}
+

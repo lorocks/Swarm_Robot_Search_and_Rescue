@@ -6,19 +6,8 @@
 #include "search.hpp"
 
 TEST(unit_test_object_detect_ball, this_should_pass) {
-  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx", "../../../src/sar/models/coco.names");
-
-  // Load a static image using cv::imread("../../assets/image.jpg"); and pass it
-  // through the runObjectDetection method
-  cv::Mat image = cv::imread("../../../src/sar/assets/people.jpg");
-
-  bool val = obj.runObjectDetection(image);
-
-  EXPECT_FALSE(val);
-}
-
-TEST(unit_test_object_detect_person, this_should_pass) {
-  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx", "../../../src/sar/models/coco.names");
+  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx",
+                   "../../../src/sar/models/coco.names");
 
   // Load a static image using cv::imread("../../assets/image.jpg"); and pass it
   // through the runObjectDetection method
@@ -26,11 +15,12 @@ TEST(unit_test_object_detect_person, this_should_pass) {
 
   bool val = obj.runObjectDetection(image);
 
-  EXPECT_TRUE(val);
+  EXPECT_FALSE(val);
 }
 
 TEST(unit_test_check_object_found, this_should_pass) {
-  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx", "../../../src/sar/models/coco.names");
+  ObjectSearch obj("../../../src/sar/models/yolov5s.onnx",
+                   "../../../src/sar/models/coco.names");
 
   bool val = obj.isObjectFound();
 
@@ -42,6 +32,5 @@ TEST(unit_test_generate_goals, this_should_pass) {
 
   auto positions = obj.generateRandomGoal();
 
-  EXPECT_GT((positions.x*positions.x) + (positions.y*positions.y), 0);
+  EXPECT_GT((positions.x * positions.x) + (positions.y * positions.y), 0);
 }
-

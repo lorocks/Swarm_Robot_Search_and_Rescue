@@ -26,39 +26,42 @@
  */
 
 #include "goals.hpp"
+
 #include <random>
 
 /**
  * @brief Construct a new Goal Generator:: Goal Generator object
  *
  * Instantiates a object of GoalGenerator Class and set the class parameters
- * 
+ *
  * @param mapWidth The width of the map
  * @param mapHeight The height of the map
  */
-GoalGenerator::GoalGenerator(int mapWidth, int mapHeight) : mapWidth_(mapWidth), mapHeight_(mapHeight) {}
+GoalGenerator::GoalGenerator(int mapWidth, int mapHeight)
+    : mapWidth_(mapWidth), mapHeight_(mapHeight) {}
 
 /**
  * @brief Generates random goal positions for navigation and traversal
  *
- * Uses the std methods for generating uniformly distributed random number between the range 
- * of the map's width and height
- * 
+ * Uses the std methods for generating uniformly distributed random number
+ * between the range of the map's width and height
+ *
  * @return GoalPosition struct return type
  */
 GoalPosition GoalGenerator::generateRandomGoal() {
-    // Define a object of struct for returning value
-    GoalPosition goal;
+  // Define a object of struct for returning value
+  GoalPosition goal;
 
-    // Use a random number generator to generate random x and y coordinates within the map
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> x_dist(0.0, static_cast<double>(mapWidth_));
-    std::uniform_real_distribution<> y_dist(0.0, static_cast<double>(mapHeight_));
+  // Use a random number generator to generate random x and y coordinates within
+  // the map
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> x_dist(0.0, static_cast<double>(mapWidth_));
+  std::uniform_real_distribution<> y_dist(0.0, static_cast<double>(mapHeight_));
 
-    // Update (x, y) values for return
-    goal.x = x_dist(gen);
-    goal.y = y_dist(gen);
+  // Update (x, y) values for return
+  goal.x = x_dist(gen);
+  goal.y = y_dist(gen);
 
-    return goal;
+  return goal;
 }

@@ -33,15 +33,15 @@ endif()
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-  # ament_add_gtest(${PROJECT_NAME}_test test/basic_test.cpp)
+  ament_add_gtest(${PROJECT_NAME}_test test/basic_test.cpp)
   target_include_directories(${PROJECT_NAME}_test PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
-  # ament_target_dependencies(${PROJECT_NAME}_test
-  #   rclcpp std_msgs
-  # )
-  # target_link_libraries(${PROJECT_NAME}_test sar)
+  ament_target_dependencies(${PROJECT_NAME}_test
+    rclcpp std_msgs
+  )
+  target_link_libraries(${PROJECT_NAME}_test sar)
 endif()
 
 ###################################################

@@ -26,6 +26,7 @@
  */
 
 #include "search.hpp"
+
 #include <opencv2/core.hpp>
 
 /**
@@ -39,12 +40,12 @@
  */
 ObjectSearch::ObjectSearch(const std::string& modelPath,
                            const std::string& yolo_names)
-    : objectFound(false) {
-
+    : objectFound(false), humanDetectionModel(cv::dnn::readNet(modelPath)) {
   // Initialize the YOLOv5 model
-  humanDetectionModel = cv::dnn::readNet(modelPath);
+  // humanDetectionModel = cv::dnn::readNet(modelPath);
 
-  // Create a info stream of the classes from coco.names file and append it to classNames vector
+  // Create a info stream of the classes from coco.names file and append it to
+  // classNames vector
   std::ifstream classNamesFile(yolo_names.c_str());
   std::string text;
   while (classNamesFile >> text) {
@@ -75,62 +76,69 @@ ObjectSearch::~ObjectSearch() {
  */
 bool ObjectSearch::runObjectDetection(const cv::Mat& frame) {
   // Convert the frame to a blob suitable for input to the model
-    cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(640, 640), cv::Scalar(), true, false);
+  cv::Mat blob = cv::dnn::blobFromImage(frame, 1.0, cv::Size(640, 640),
+                                        cv::Scalar(), true, false);
 
-    // Set the input blob for the model
-    humanDetectionModel.setInput(blob);
+  // Set the input blob for the model
+  humanDetectionModel.setInput(blob);
 
-    std::vector<cv::Mat> outputs;
+  std::vector<cv::Mat> outputs;
 
-    // Forward pass the blob through the model
-    humanDetectionModel.forward(outputs, humanDetectionModel.getUnconnectedOutLayersNames());
+  // Forward pass the blob through the model
+  humanDetectionModel.forward(
+      outputs, humanDetectionModel.getUnconnectedOutLayersNames());
 
-    const cv::Mat &detectionMat = outputs[0];
-    float *data = (float *)outputs[0].data;
+  float* data = reinterpret_cast<float*>(outputs[0].data);
 
-    for (int i = 0; i < 25200; ++i){
-      float confidence = data[4];
-      if (confidence > 0.5){
-        float * classes_scores = data + 5;
-        cv::Mat scores(1, classNames.size(), CV_32FC1, classes_scores);
-        cv::Point class_id;
-        double max_score;
-        cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
-        if (class_id.x == 1){
-          objectFound = true;
+  for (int i = 0; i < 25200; ++i) {
+    float confidence = data[4];
+    if (confidence > 0.5) {
+      float* classes_scores = data + 5;
+      cv::Mat scores(1, classNames.size(), CV_32FC1, classes_scores);
+      cv::Point class_id;
+      double max_score;
+      cv::minMaxLoc(scores, 0, &max_score, 0, &class_id);
+      if (class_id.x == 1) {
+        objectFound = true;
 
-          return true;
-        }
+        return true;
       }
     }
+  }
 
-    // // Process the detection results and update the objectFound variable accordingly
-    // for (int i = 0; i < detectionMat.rows; ++i) {
-    //     float confidence = detectionMat.at<float>(i, 2);
+  // // Process the detection results and update the objectFound variable
+  // accordingly for (int i = 0; i < detectionMat.rows; ++i) {
+  //     float confidence = detectionMat.at<float>(i, 2);
 
-    //     // Extract class index from detection
-    //     int classId = static_cast<int>(detectionMat.at<float>(i, 1));
+  //     // Extract class index from detection
+  //     int classId = static_cast<int>(detectionMat.at<float>(i, 1));
 
-    //     // Check if the detected class is a person
-    //     if ((classNames[classId] == "person" || classNames[classId] == "ball") && confidence > 0.5) {
-    //         objectFound = true;
+  //     // Check if the detected class is a person
+  //     if ((classNames[classId] == "person" || classNames[classId] == "ball")
+  //     && confidence > 0.5) {
+  //         objectFound = true;
 
-    //         // // Extract bounding box coordinates
-    //         // int x = static_cast<int>(frame.cols * detectionMat.at<float>(i, 3));
-    //         // int y = static_cast<int>(frame.rows * detectionMat.at<float>(i, 4));
-    //         // int width = static_cast<int>(frame.cols * (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
-    //         // int height = static_cast<int>(frame.rows * (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
+  //         // // Extract bounding box coordinates
+  //         // int x = static_cast<int>(frame.cols * detectionMat.at<float>(i,
+  //         3));
+  //         // int y = static_cast<int>(frame.rows * detectionMat.at<float>(i,
+  //         4));
+  //         // int width = static_cast<int>(frame.cols *
+  //         (detectionMat.at<float>(i, 5) - detectionMat.at<float>(i, 3)));
+  //         // int height = static_cast<int>(frame.rows *
+  //         (detectionMat.at<float>(i, 6) - detectionMat.at<float>(i, 4)));
 
-    //         // // Draw bounding box
-    //         // cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y + height), cv::Scalar(0, 255, 0), 2);
+  //         // // Draw bounding box
+  //         // cv::rectangle(frame, cv::Point(x, y), cv::Point(x + width, y +
+  //         height), cv::Scalar(0, 255, 0), 2);
 
-    //         return true;
-    //     }
-    // }
+  //         return true;
+  //     }
+  // }
 
-    // If no person is found in the frame, set objectFound to false
-    objectFound = false;
-    return false;
+  // If no person is found in the frame, set objectFound to false
+  objectFound = false;
+  return false;
 }
 
 /**

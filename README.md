@@ -40,6 +40,7 @@ The project will take two weeks to complete over two iterations, consisting of P
 # Links
 ## Video Links
 [Final Project Phase 1](https://youtu.be/q-IzEfy1U-s)
+<br>
 [Final Project Phase 2, Implementation Run](https://youtu.be/q_XyEkmD19g)
 
 ## AIP Document Links
